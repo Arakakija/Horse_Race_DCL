@@ -175,5 +175,6 @@ export class MyRoom extends Room<MyRoomState> {
     console.log(horse1)
     horse1.position = 1
     console.log(horse1.position);
+    this.broadcast("next-round", this.state.horses)
   }
 }
