@@ -1,5 +1,5 @@
 import { Room, Client } from "colyseus";
-import { Block, MyRoomState, Player } from "./MyRoomState";
+import { Block, MyRoomState, Player, Horse } from "./MyRoomState";
 
 const ROUND_DURATION = 60 * 3;
 // const ROUND_DURATION = 30;
@@ -16,7 +16,7 @@ export class MyRoom extends Room<MyRoomState> {
 
     // set-up the game!
     this.setUp();
-
+    
     this.onMessage("touch-block", (client: Client, atIndex: number) => {
       // set player new position
       const player = this.state.players.get(client.sessionId);
@@ -81,19 +81,6 @@ export class MyRoom extends Room<MyRoomState> {
     // make sure we clear previous interval
     this.clock.clear();
 
-    this.clock.setInterval(() => {
-      if (this.state.countdown > 0) {
-        if (!this.isFinished) {
-          this.state.countdown--;
-        }
-
-      } else {
-        this.broadcast("restart");
-
-        // countdown reached zero! restart the game!
-        this.setUp();
-      }
-    }, 1000);
   }
 
   createBlock(atIndex: number) {
@@ -142,6 +129,24 @@ export class MyRoom extends Room<MyRoomState> {
     this.state.players.set(client.sessionId, newPlayer);
 
     console.log(this.roomId,this.roomName,newPlayer.name, "joined! => ", options.userData);
+
+    if(this.state.players.size > 2){
+      this.state.lobbyWaitingTime = 40;
+      this.clock.setInterval(() => {
+        if(this.state.lobbyWaitingTime>0){
+          this.state.lobbyWaitingTime--
+        }
+      }, 1000);
+    }else{
+      this.clock.clear();
+    }
+    if(this.state.players.size === this.state.maxPlayers){
+      this.clock.clear()
+      this.startGame(client);
+    }
+    this.startGame(client)
+
+    //avatar Image on options.userData.data.avatar.snapshots.face256
   }
 
   onLeave (client: Client, consented: boolean) {
@@ -155,4 +160,20 @@ export class MyRoom extends Room<MyRoomState> {
     console.log(this.roomId,this.roomName,"Disposing room...");
   }
 
+  startGame(client: Client){
+    this.state.gameStarted = true;
+    this.broadcast("game-start");
+    const horse1 = new Horse().assign({id: 1, position: 0});
+    const horse2 = new Horse().assign({id: 2, position: 0});
+    const horse3 = new Horse().assign({id: 3, position: 0});
+    const horse4 = new Horse().assign({id: 4, position: 0});
+    this.state.horses.push(horse1);
+    this.nextRound(client);
+  }
+  nextRound(client: Client){
+    let horse1 = this.state.horses[0]
+    console.log(horse1)
+    horse1.position = 1
+    console.log(horse1.position);
+  }
 }
