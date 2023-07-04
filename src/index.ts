@@ -11,6 +11,6 @@ import { initStatic } from "./scene";
 export * from '@dcl/sdk'
 
 export function main(){
-    initStatic() 
+    //initStatic() 
     initGamePlay() 
 }
