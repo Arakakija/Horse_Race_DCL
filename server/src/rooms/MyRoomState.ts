@@ -1,4 +1,5 @@
 import { Schema, Context, ArraySchema, MapSchema, type } from "@colyseus/schema";
+import { Clock } from "colyseus";
 
 export class Player extends Schema {
   @type("string") name: string;
@@ -32,10 +33,8 @@ export class MyRoomState extends Schema {
   @type("number") lobbyWaitingTime : number = 40;
   @type("number") poolPrice : number;
   @type("boolean") gameStarted: boolean = false;
-  @type({ map: Player }) players = new MapSchema<Player>();
-  @type(Timer) lobbyClock : Timer;
-  @type(Timer) roundClock: Timer;
-  @type([Horse]) horses = new ArraySchema<Horse>();
+  @type({ map: Player }) players = new MapSchema<Player>();  
+  @type({map: Horse}) horses = new MapSchema<Horse>();
 }
 
 

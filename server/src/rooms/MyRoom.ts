@@ -1,4 +1,4 @@
-import { Room, Client } from "colyseus";
+import { Room, Client, Delayed } from "colyseus";
 import { Block, MyRoomState, Player, Horse } from "./MyRoomState";
 
 const ROUND_DURATION = 60 * 3;
@@ -10,7 +10,8 @@ const MAX_BLOCK_HEIGHT = 19;
 export class MyRoom extends Room<MyRoomState> {
   private currentHeight: number = 0;
   private isFinished: boolean = false;
-
+  private roundClock!: Delayed;
+  private roundDuration: number = 20;
   onCreate (options: any) {
     this.setState(new MyRoomState());
 
@@ -125,6 +126,7 @@ export class MyRoom extends Room<MyRoomState> {
     const newPlayer = new Player().assign({
       name: options.userData.displayName || "Anonymous",
       ranking: 0,
+      cash: 500
     });
     this.state.players.set(client.sessionId, newPlayer);
 
@@ -167,14 +169,27 @@ export class MyRoom extends Room<MyRoomState> {
     const horse2 = new Horse().assign({id: 2, position: 0});
     const horse3 = new Horse().assign({id: 3, position: 0});
     const horse4 = new Horse().assign({id: 4, position: 0});
-    this.state.horses.push(horse1);
-    this.nextRound(client);
+    this.state.horses.set(`${horse1.id}`, horse1);
+    this.nextRound();
   }
-  nextRound(client: Client){
-    let horse1 = this.state.horses[0]
-    console.log(horse1)
-    horse1.position = 1
-    console.log(horse1.position);
-    this.broadcast("next-round", this.state.horses)
+
+  endGame(){
+    this.broadcast("end-game", {winner: 1})
+  }
+  
+  nextRound(){
+    this.clock.start();
+    let seconds = this.roundDuration;
+    this.roundClock = this.clock.setInterval(() => {
+      this.broadcast("round-time", seconds--);
+    }, 1000);
+
+    this.clock.setTimeout(() => {
+      this.broadcast("end-round", "")
+      this.roundClock.clear();
+      this.nextRound()
+    }, this.roundDuration*1000);
+
+   
   }
 }
