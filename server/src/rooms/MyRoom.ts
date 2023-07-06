@@ -1,5 +1,5 @@
 import { Room, Client, Delayed } from "colyseus";
-import { Block, MyRoomState, Player, Horse } from "./MyRoomState";
+import { Block, MyRoomState, Player, Horse, Point, Ring } from "./MyRoomState";
 
 const ROUND_DURATION = 60 * 3;
 // const ROUND_DURATION = 30;
@@ -57,6 +57,11 @@ export class MyRoom extends Room<MyRoomState> {
       this.state.blocks.clear();
     }
 
+    if (this.state.horses.size > 0) {
+      // clear previous blocks
+      this.state.horses.clear();
+    }
+
     // create first block
     this.state.blocks.push(
       new Block().assign({
@@ -65,6 +70,15 @@ export class MyRoom extends Room<MyRoomState> {
         z: 8,
       })
     );
+
+  const centerPoint: Point = new Point({x : 8, y : 8});
+  const radius = 7;
+  const numberOfRings = 4;
+  const numberOfSegments = 12;
+  this.createCircularGrid(centerPoint,radius,numberOfRings,numberOfSegments);
+
+
+    console.log("Horses On Display", this.state.horses.size)
 
     this.currentHeight = 1;
     this.isFinished = false;
@@ -117,10 +131,45 @@ export class MyRoom extends Room<MyRoomState> {
     this.state.blocks.push(block);
   }
 
+
+  createHorse(atIndex: number) {
+    const horse = new Horse().assign({id: atIndex, positionX : 5, positionY : 5});
+    this.state.horses.set(`${horse.id}`, horse);
+  }
+
   _applyBoundaries(coord: number) {
     // ensure value is between 1 and 15.
     return Math.max(1, Math.min(15, coord));
   }
+
+  createCircularGrid(center: Point, radius: number, rings: number, segments: number) {
+    const anglePerSegment = 360 / segments;
+    const distanceBetweenRings = radius / rings;
+  
+    for (let ring = 0; ring < rings; ring++) {
+      const currentRadius = distanceBetweenRings * (ring + 1);
+      const newRing = new Ring();
+  
+      for (let segment = 0; segment < segments; segment++) {
+        const angle = (segment * anglePerSegment * Math.PI) / 180; // Convert degrees to radians
+        const newX = center.x + currentRadius * Math.cos(angle);
+        const newY = center.y + currentRadius * Math.sin(angle);
+        newRing.points.push(new Point().assign({x : newX, y : newY}));
+      }
+  
+      this.state.grid.push(newRing);
+    }
+
+    console.log("grid is created")
+  }
+
+  // FindPoint(x : number, y : number){
+  //   return this.state.grid.filter(p => p[0].x === x && p[0].y === y)
+  // }
+
+  // FindNextPoint(x : number, y : number){
+  //   return this.state.grid.filter(p => p[0].x + 1 === x && p[0].y + 1 === y)
+  // }
 
   onJoin (client: Client, options: any) {
     const newPlayer = new Player().assign({
@@ -165,10 +214,10 @@ export class MyRoom extends Room<MyRoomState> {
   startGame(client: Client){
     this.state.gameStarted = true;
     this.broadcast("game-start");
-    const horse1 = new Horse().assign({id: 1, position: 0});
-    const horse2 = new Horse().assign({id: 2, position: 0});
-    const horse3 = new Horse().assign({id: 3, position: 0});
-    const horse4 = new Horse().assign({id: 4, position: 0});
+    const horse1 = new Horse().assign({id: 1, positionX: 0, positionY : 0});
+    const horse2 = new Horse().assign({id: 2, positionX: 0, positionY : 0});
+    const horse3 = new Horse().assign({id: 3, positionX: 0, positionY : 0});
+    const horse4 = new Horse().assign({id: 4,positionX: 0, positionY : 0});
     this.state.horses.set(`${horse1.id}`, horse1);
     this.nextRound();
   }
@@ -189,7 +238,6 @@ export class MyRoom extends Room<MyRoomState> {
       this.roundClock.clear();
       this.nextRound()
     }, this.roundDuration*1000);
-
-   
   }
 }
+  

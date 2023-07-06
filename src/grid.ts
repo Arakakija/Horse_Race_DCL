@@ -15,14 +15,20 @@ import {
   {
     for (let i = 0; i < nodesX.length; i++) {
         for (let j = 0; j < nodesY.length; j += 2) {
-          const tileEntity = engine.addEntity()
-          MeshRenderer.setPlane(tileEntity)
-          Transform.create(tileEntity, {
-            position: Vector3.create(i * sizeX + offset, 0, j * sizeY + offset),
-            rotation: Quaternion.fromEulerDegrees(90, 0, 0),
-            scale: Vector3.create(1, 1, 1)
-          })
-          Tile.create(tileEntity, { id: { idX: i, idY: j } })
+          CreateTile(i, j)
         }
       }
   }
+
+function CreateTile(i: number, j: number) {
+  const tileEntity = engine.addEntity()
+  MeshRenderer.setPlane(tileEntity)
+  Transform.create(tileEntity, {
+    position: Vector3.create(i * sizeX + offset, 0, j * sizeY + offset),
+    rotation: Quaternion.fromEulerDegrees(90, 0, 0),
+    scale: Vector3.create(1, 1, 1)
+  })
+  Tile.create(tileEntity, { id: { idX: i, idY: j } })
+}
+
+

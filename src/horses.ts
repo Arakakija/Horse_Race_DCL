@@ -10,17 +10,16 @@ import { GetTile } from './grid-systems';
 import { ResetHorse } from './systems';
 import * as utils from '@dcl-sdk/utils'
 
-function createHorse(id : number) : Entity{
+function createHorse(positionX : number,positionY : number) : Entity{
     const horseEntity = engine.addEntity();
+    console.log("creando entity");
     MeshRenderer.setSphere(horseEntity)
-    SetHorseTransform(horseEntity,id);
+    Transform.create(horseEntity,{position:{x : positionX, y : positionY, z : 0}})
     utils.triggers.oneTimeTrigger(horseEntity,
         utils.LAYER_1,
         utils.LAYER_2,
         [{type: 'box'}],
-        ()=>{ResetHorse(horseEntity)});
-    Horse.create(horseEntity,{id: id, startPosition: Transform.get(horseEntity).position});
-    SetColor(horseEntity)
+        ()=>{ResetHorse(horseEntity)}); 
     return horseEntity;
   }
   
@@ -51,18 +50,7 @@ function SetColor(entity: Entity){
     }
   }
 
-function SetHorseTransform(horseEntity : Entity,id : number)
-{
-  Transform.create(horseEntity,{
-    position:{
-      x: Transform.get(GetTile(0,id * 2)).position.x,
-      y: 1,
-      z: Transform.get(GetTile(0,id * 2)).position.z
-    }
-  })
-}
-
-export function AddHorse(horses : Entity[]) {
-    const horse = createHorse(horses.length)
-    horses.push(horse)
+export function AddHorse(positionX : number, positionY : number) {
+    const horse = createHorse(positionX,positionY)
+    return horse;
   }

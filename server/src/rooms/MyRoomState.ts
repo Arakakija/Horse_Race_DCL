@@ -22,7 +22,17 @@ export class Timer extends Schema{
 
 export class Horse extends Schema {
   @type("number") id: number;
-  @type("number") position: number;
+  @type("number") positionX: number;
+  @type("number") positionY: number;
+}
+
+export class Point extends Schema {
+  @type("number") x: number;
+  @type("number") y: number;
+}
+
+export class Ring extends Schema {
+  @type([Point]) points = new ArraySchema<Point>();
 }
 
 export class MyRoomState extends Schema {
@@ -35,6 +45,7 @@ export class MyRoomState extends Schema {
   @type("boolean") gameStarted: boolean = false;
   @type({ map: Player }) players = new MapSchema<Player>();  
   @type({map: Horse}) horses = new MapSchema<Horse>();
+  @type([Ring]) grid = new ArraySchema<Ring>();
 }
 
 
