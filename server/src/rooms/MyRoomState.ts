@@ -32,7 +32,7 @@ export class MyRoomState extends Schema {
   @type("number") maxPlayers : number = 32;
   @type("number") lobbyWaitingTime : number = 40;
   @type("number") poolPrice : number;
-  @type("boolean") gameStarted: boolean = false;
+  @type("string") gameStatus: string;
   @type({ map: Player }) players = new MapSchema<Player>();  
   @type({map: Horse}) horses = new MapSchema<Horse>();
 }

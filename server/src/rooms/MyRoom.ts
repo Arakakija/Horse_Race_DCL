@@ -7,6 +7,12 @@ const ROUND_DURATION = 60 * 3;
 // const MAX_BLOCK_HEIGHT = 5;
 const MAX_BLOCK_HEIGHT = 19;
 
+const GAME_STATUS = Object.freeze({
+  WAITING_FOR_PLAYERS: 'WAITING_FOR_PLAYER',
+  STARTED: 'STARTED',
+  FINISHED: 'FINISHED'
+})
+
 export class MyRoom extends Room<MyRoomState> {
   private currentHeight: number = 0;
   private isFinished: boolean = false;
@@ -14,108 +20,29 @@ export class MyRoom extends Room<MyRoomState> {
   private roundDuration: number = 20;
   onCreate (options: any) {
     this.setState(new MyRoomState());
-
     // set-up the game!
     this.setUp();
-    
-    this.onMessage("touch-block", (client: Client, atIndex: number) => {
-      // set player new position
-      const player = this.state.players.get(client.sessionId);
-      player.ranking = atIndex;
-
-      if (atIndex === MAX_BLOCK_HEIGHT) {
-
-        if (!this.isFinished) {
-          //
-          // winner! reached max block height!
-          //
-          this.broadcast("finished");
-          this.isFinished = true;
-
-          this.clock.setTimeout(() => {
-            this.setUp();
-          }, 5000);
-        }
-
-      } else if (atIndex === this.state.blocks.length) {
-        //
-        // create a new block at the requested position, if it doesn't yet exist.
-        //
-        this.createBlock(atIndex);
-      } 
-    });
-
-    this.onMessage("fall", (client: Client, atPosition: any) => {
-      this.broadcast("fall", atPosition);
-    });
   }
 
   setUp() {
-
-    if (this.state.blocks.length > 0) {
-      // clear previous blocks
-      this.state.blocks.clear();
-    }
-
-    // create first block
-    this.state.blocks.push(
-      new Block().assign({
-        x: 8,
-        y: 1,
-        z: 8,
-      })
-    );
-
-    this.currentHeight = 1;
-    this.isFinished = false;
-
-    // reset all player's ranking position
-    this.state.players.forEach((player) => {
-      player.ranking = 0;
-    });
-
-    this.broadcast("start");
-
-    // setup round countdown
-    this.state.countdown = ROUND_DURATION;
-
-    // make sure we clear previous interval
+    this.resetHorses()
     this.clock.clear();
-
+    this.startWaitingPlayers()
   }
 
-  createBlock(atIndex: number) {
-    const previousBlock2 = this.state.blocks[atIndex - 2];
-    const previousBlock = this.state.blocks[atIndex - 1];
-    const maxDistance = 4.5;
+  resetHorses(){
+    const horse1 = new Horse().assign({id: 1, position: 0});
+    const horse2 = new Horse().assign({id: 2, position: 0});
+    const horse3 = new Horse().assign({id: 3, position: 0});
+    const horse4 = new Horse().assign({id: 4, position: 0});
 
-    const block = new Block();
-
-    //
-    // let's set next block position!
-
-    // y is 1 block higher.
-    this.currentHeight++;
-    block.y = this.currentHeight;
-
-    do {
-      // ensure next block's X is not too close to previous block.
-      block.x = this._applyBoundaries(previousBlock.x - maxDistance + (Math.random() * (maxDistance * 2)));
-    } while (
-      Math.abs(block.x - previousBlock.x) < 1 ||
-      (previousBlock2 && Math.abs(block.x - previousBlock2.x) < 1)
-    );
-
-    do {
-      // ensure next block's Z is not too close to previous block.
-      block.z = this._applyBoundaries(previousBlock.z - maxDistance + (Math.random() * (maxDistance * 2)));
-    } while (
-      Math.abs(block.z - previousBlock.z) < 1 ||
-      (previousBlock2 && Math.abs(block.z - previousBlock2.z) < 1)
-    );
-
-    this.state.blocks.push(block);
+    this.state.horses.set('1', horse1);
+    this.state.horses.set('2', horse2);
+    this.state.horses.set('3', horse3);
+    this.state.horses.set('4', horse4);
   }
+
+  
 
   _applyBoundaries(coord: number) {
     // ensure value is between 1 and 15.
@@ -125,30 +52,12 @@ export class MyRoom extends Room<MyRoomState> {
   onJoin (client: Client, options: any) {
     const newPlayer = new Player().assign({
       name: options.userData.displayName || "Anonymous",
-      ranking: 0,
+      horseID: null,
       cash: 500
     });
-    this.state.players.set(client.sessionId, newPlayer);
-
-    console.log(this.roomId,this.roomName,newPlayer.name, "joined! => ", options.userData);
-
-    if(this.state.players.size > 2){
-      this.state.lobbyWaitingTime = 40;
-      this.clock.setInterval(() => {
-        if(this.state.lobbyWaitingTime>0){
-          this.state.lobbyWaitingTime--
-        }
-      }, 1000);
-    }else{
-      this.clock.clear();
+    if(this.maxClients >= this.state.players.size){
+      this.state.players.set(client.sessionId, newPlayer);
     }
-    if(this.state.players.size === this.state.maxPlayers){
-      this.clock.clear()
-      this.startGame(client);
-    }
-    this.startGame(client)
-
-    //avatar Image on options.userData.data.avatar.snapshots.face256
   }
 
   onLeave (client: Client, consented: boolean) {
@@ -159,22 +68,69 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   onDispose() {
-    console.log(this.roomId,this.roomName,"Disposing room...");
+    console.log(this.roomId,this.roomName, "Disposing room...");
   }
 
-  startGame(client: Client){
-    this.state.gameStarted = true;
+  startGame(){
+    this.state.gameStatus = GAME_STATUS.STARTED;
     this.broadcast("game-start");
-    const horse1 = new Horse().assign({id: 1, position: 0});
-    const horse2 = new Horse().assign({id: 2, position: 0});
-    const horse3 = new Horse().assign({id: 3, position: 0});
-    const horse4 = new Horse().assign({id: 4, position: 0});
-    this.state.horses.set(`${horse1.id}`, horse1);
-    this.nextRound();
   }
 
-  endGame(){
-    this.broadcast("end-game", {winner: 1})
+  setLobbyClock(){
+    this.state.lobbyWaitingTime = 40;
+    this.clock.setInterval(() => {
+      if(this.state.lobbyWaitingTime>0){
+        this.state.lobbyWaitingTime--
+        this.broadcast('lobby-timer', { time: this.state.lobbyWaitingTime });
+      }
+      if(this.state.players.size === this.state.maxPlayers){
+        this.clock.clear()
+        this.startGame();
+        return
+      }
+      if(this.state.lobbyWaitingTime === 0){
+        if(this.minimumPlayersIn()){
+          this.clock.clear();
+          this.startGame();
+          return
+        }else{
+          this.clock.clear();
+          this.setLobbyClock();
+          return
+        }
+      }
+    }, 1000);
+  }
+
+  minimumPlayersIn(){
+    return this.state.players.size > 2
+  }
+  
+  startWaitingPlayers(){
+    this.state.gameStatus = GAME_STATUS.WAITING_FOR_PLAYERS;
+    this.broadcast('waiting-players', {});
+    this.setLobbyClock();
+  }
+
+  playerSelectsHorse(){
+    this.onMessage('select-horse', (client:Client, message)=>{
+      const player = this.state.players.get(client.sessionId);
+      player.horseID = message.horseID;
+    })
+  }
+
+  allPlayersSelectedAHorse(){
+    let allPlayersSelected = true;
+    this.state.players.forEach((player)=>{
+      if(player.horseID === null){
+        allPlayersSelected = false;
+      }
+    });
+    return allPlayersSelected;
+  }
+
+  endGame(horse: Horse){
+    this.broadcast("end-game", horse);
   }
   
   nextRound(){
@@ -189,7 +145,5 @@ export class MyRoom extends Room<MyRoomState> {
       this.roundClock.clear();
       this.nextRound()
     }, this.roundDuration*1000);
-
-   
   }
 }
