@@ -153,6 +153,13 @@ connect("my_room").then((room) => {
         //countdown.set(num);
     })
 
+    room.onMessage("*", (type, message)=>{
+        //log(JSON.stringify(message))
+        //log(type)
+        console.log(JSON.stringify(message))
+        console.log(type)
+    })
+
     room.onMessage("start", () => {
         log("room.onMessage.start","ENTRY")
         // remove all previous boxes
@@ -196,5 +203,4 @@ connect("my_room").then((room) => {
     console.error(err)
 
 });
-
 }
