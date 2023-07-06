@@ -1,5 +1,4 @@
 import { Schema, Context, ArraySchema, MapSchema, type } from "@colyseus/schema";
-import { Clock } from "colyseus";
 
 export class Player extends Schema {
   @type("string") name: string;
