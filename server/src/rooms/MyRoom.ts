@@ -16,6 +16,10 @@ export class MyRoom extends Room<MyRoomState> {
     this.setState(new MyRoomState());
     // set-up the game!
     this.setUp();
+
+    this.onMessage('move-horse', (client:Client, message)=>{
+        console.log("horse moved")
+    })
   }
 
   setUp() {
@@ -174,7 +178,5 @@ export class MyRoom extends Room<MyRoomState> {
   endGame(horse: Horse){
     this.broadcast("end-game", horse);
   }
-  
-  
-    
+
 }

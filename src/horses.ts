@@ -62,7 +62,6 @@ export function MoveHorse(horseId : number,horse : Entity,room : Room) {
     })
     horsePosition.position.x = point.x;
     horsePosition.position.z = point.y;
-    room.send("move-horse", horseId)
 }
 
 export function BackHorse(horseId : number,horse : Entity,room : Room) {
@@ -95,5 +94,4 @@ export function BackHorse(horseId : number,horse : Entity,room : Room) {
     })
     horsePosition.position.x = point.x;
     horsePosition.position.z = point.y;
-    room.send("back-horse", horseId)
 }

@@ -36,9 +36,10 @@ connect("my_room").then((room) => {
     let minPosition = 1;
 
     function MoveHorseForward() {
-        const randomId  = getRandomNumber(0,3)
-        MoveHorse(randomId, horses[randomId], room);
+        const randomHorseId  = getRandomNumber(0,3)
+        MoveHorse(randomHorseId, horses[randomHorseId], room);
         CheckForPositions();
+        room.send("move-horse-forward", randomHorseId);
     }
 
     function CheckForPositions()
@@ -56,8 +57,9 @@ connect("my_room").then((room) => {
        if(i >= 4)
        {
           console.log('Entro');
-          const randomId  = getRandomNumber(0,3)
-          BackHorse(randomId,horses[randomId],room)
+          const randomHorseId  = getRandomNumber(0,3)
+          BackHorse(randomHorseId,horses[randomHorseId],room)
+          room.send("move-horse-backwards", randomHorseId)
           i = 0;
           minPosition++;
        }
@@ -97,15 +99,6 @@ connect("my_room").then((room) => {
         }
     )
     */
-    
-
-
-    room.state.grid.onAdd = (ring: any, i: number) => {
-        log("room.state.grid.onAdd","ENTRY")
-        console.log("entro a crear grid ");
-    };
-
-
 
 
     let horses : Entity[] = [];
