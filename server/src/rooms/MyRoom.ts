@@ -3,10 +3,11 @@ import { MyRoomState, Player, Horse, Ring, Point } from "./MyRoomState";
 
 const GAME_STATUS = Object.freeze({
   WAITING_FOR_PLAYERS: 'WAITING_FOR_PLAYER',
-  STARTED: 'STARTED',
+  IN_PROGRESS: 'IN_PROGRESS',
   FINISHED: 'FINISHED',
   PLACING_BETS: 'PLACING_BETS'
 });
+
 const LOBBY_TIME = 40
 const ROUND_DURATION = 20;
 const BETTING_TIME = 30;
@@ -108,7 +109,7 @@ export class MyRoom extends Room<MyRoomState> {
         
         if(this.allPlayersSelectedAHorse()){
           this.clock.clear()
-          this.state.gameStatus = GAME_STATUS.STARTED;
+          this.state.gameStatus = GAME_STATUS.IN_PROGRESS;
           this.broadcast("game-start");
           this.nextRound();
         }else{
@@ -120,7 +121,7 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   nextRound(){
-    
+     
   }
 
   setLobbyClock(){
