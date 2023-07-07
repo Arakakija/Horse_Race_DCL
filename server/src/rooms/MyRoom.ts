@@ -1,5 +1,5 @@
 import { Room, Client, Delayed } from "colyseus";
-import { MyRoomState, Player, Horse } from "./MyRoomState";
+import { MyRoomState, Player, Horse, Ring, Point } from "./MyRoomState";
 
 const GAME_STATUS = Object.freeze({
   WAITING_FOR_PLAYERS: 'WAITING_FOR_PLAYER',
@@ -19,16 +19,52 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   setUp() {
+    const centerPoint: Point = new Point({x : 8, y : 8});
+    const radius = 5;
+    const numberOfRings = 4;
+    const numberOfSegments = 12;
+    this.createCircularGrid(centerPoint,radius,numberOfRings,numberOfSegments);
     this.resetHorses()
     this.clock.clear();
     this.startWaitingPlayers()
   }
 
+  createCircularGrid(center: Point, radius: number, rings: number, segments: number) {
+    const anglePerSegment = 360 / segments;
+    const distanceBetweenRings = radius / rings;
+  
+    for (let ring = 0; ring < rings; ring++) {
+      const currentRadius = distanceBetweenRings * (ring + 1);
+      const newRing = new Ring();
+      
+  
+      for (let segment = 0; segment < segments; segment++) {
+        const angle = (segment * anglePerSegment * Math.PI) / 180; // Convert degrees to radians
+        const newX = center.x + currentRadius * Math.cos(angle);
+        const newY = center.y + currentRadius * Math.sin(angle);
+        newRing.points.push(new Point().assign({x : newX, y : newY}));
+      }
+      this.state.grid.push(newRing);
+    }
+
+    console.log("grid is created")
+  }
+
+  getRing(ringID : number) : Ring
+  {
+     return this.state.grid[ringID];
+  }
+
+  getPosition(ringID : number, point : number) : Point
+  {
+    return this.getRing(ringID -1).points[point];
+  }
+
   resetHorses(){
-    const horse1 = new Horse().assign({id: 1, position: 0});
-    const horse2 = new Horse().assign({id: 2, position: 0});
-    const horse3 = new Horse().assign({id: 3, position: 0});
-    const horse4 = new Horse().assign({id: 4, position: 0});
+    const horse1 = new Horse().assign({id: 1, position: 0, actualPosition : this.getPosition(1,0)});
+    const horse2 = new Horse().assign({id: 2, position: 0, actualPosition : this.getPosition(2,0)});
+    const horse3 = new Horse().assign({id: 3, position: 0, actualPosition : this.getPosition(3,0)});
+    const horse4 = new Horse().assign({id: 4, position: 0, actualPosition : this.getPosition(4,0)});
 
     this.state.horses.set('1', horse1);
     this.state.horses.set('2', horse2);

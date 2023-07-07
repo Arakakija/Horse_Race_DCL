@@ -8,6 +8,15 @@ export class Player extends Schema {
   @type("number") betAmout : number;
 }
 
+export class Point extends Schema {
+  @type("number") x: number;
+  @type("number") y: number;
+}
+
+export class Ring extends Schema {
+  @type([Point]) points = new ArraySchema<Point>();
+}
+
 // TODO remove block
 export class Block extends Schema {
   @type("number") x: number;
@@ -17,18 +26,10 @@ export class Block extends Schema {
 
 export class Horse extends Schema {
   @type("number") id: number;
-  @type("number") positionX: number;
-  @type("number") positionY: number;
+  @type("number") position : number;
+  @type(Point) actualPosition : Point;
 }
 
-export class Point extends Schema {
-  @type("number") x: number;
-  @type("number") y: number;
-}
-
-export class Ring extends Schema {
-  @type([Point]) points = new ArraySchema<Point>();
-}
 
 export class MyRoomState extends Schema {
   @type("number") countdown: number;

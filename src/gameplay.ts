@@ -7,8 +7,9 @@ import { ambienceSound, clickSound, fallSound, finishSound1, finishSound2, newLe
 import { log } from './back-ports/backPorts';
 import { AudioSource, Entity, MeshCollider, MeshRenderer, Transform, engine } from '@dcl/sdk/ecs';
 import { Vector3 } from '@dcl/sdk/math';
-import { addRepeatTrigger } from './Utils';
-import { AddHorse, MoveHorse } from './horses';
+import { addRepeatTrigger, getRandomNumber } from './Utils';
+import { AddHorse, BackHorse, MoveHorse } from './horses';
+import { Horse } from './custom-components';
 
 
 let nodesX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -32,10 +33,34 @@ connect("my_room").then((room) => {
     //const countdown = new ui.UICounter(0, -30, 30, Color4.White(), 50, false);
 
     let lastBlockTouched: number = 0;
-    function onTouchBlock(y: number) {
-        // send block index and player position to Colyseus server
-        lastBlockTouched = y;
-        room.send("touch-block", y);
+    let minPosition = 1;
+
+    function MoveHorseForward() {
+        const randomId  = getRandomNumber(0,3)
+        MoveHorse(randomId, horses[randomId], room);
+        CheckForPositions();
+    }
+
+    function CheckForPositions()
+    {
+       let i = 0;
+       for(const [horseEntity] of engine.getEntitiesWith(Horse))
+       {
+          if(Horse.get(horseEntity).actualPosition >= minPosition)
+          {
+             i++;
+    
+          }
+       }
+    
+       if(i >= 4)
+       {
+          console.log('Entro');
+          const randomId  = getRandomNumber(0,3)
+          BackHorse(randomId,horses[randomId],room)
+          i = 0;
+          minPosition++;
+       }
     }
 
     function refreshLeaderboard() {
@@ -74,74 +99,21 @@ connect("my_room").then((room) => {
     */
     
 
-    /// --- Spawner function ---
-    function spawnCube(x: number, y: number, z: number) {
-        // create the entity
-        const cube = engine.addEntity()
-         
-        MeshRenderer.setBox(cube)
-        MeshCollider.setBox(cube)
- 
-        // add a transform to the entity
-        Transform.create(cube,{ position: Vector3.create(x, y, z) })
-        /*
-        // set random color/material for the cube
-        const cubeMaterial = new Material()
-        cubeMaterial.albedoColor = Color3.Random();
-        cubeMaterial.metallic = Math.random();
-        cubeMaterial.roughness = Math.random();
-        cube.addComponent(cubeMaterial);
-        */
-       
-        addRepeatTrigger(
-            Vector3.create(0.7, 1, 0.7),// position,
-             Vector3.create(0, 2, 0), // size
-            (entity:Entity) => {
-                log('player.enter.touch.cube',entity)
-                onTouchBlock(y);
-            },
-            cube,
-            false,
-            () => {
-                //log('player.exit.touch.cube')
-            }
-        )
 
-        utils.tweens.startScaling(cube,
-            Vector3.create(0, 0, 0), Vector3.create(1, 1, 1),.2
-            )
-        
-        // play click sound
-        AudioSource.createOrReplace(cube,
-            {
-                audioClipUrl:"sounds/click.mp3",
-                loop:false,
-                playing:true
-            })
-
-        return cube;
-    }
-
-        /// --- Spawner function ---
-    //
-    // -- Colyseus / Schema callbacks -- 
-    // https://docs.colyseus.io/state/schema/
-    //
-    let allBoxes: Entity[] = []; 
-    let lastBox: Entity;
-    room.state.blocks.onAdd = (block: any, i: number) => {
-        log("room.state.blocks.onAdd","ENTRY")
-        console.log("entro a crear cube");
-        lastBox = spawnCube(block.x, block.y, block.z);
-        allBoxes.push(lastBox);
+    room.state.grid.onAdd = (ring: any, i: number) => {
+        log("room.state.grid.onAdd","ENTRY")
+        console.log("entro a crear grid ");
     };
+
+
+
 
     let horses : Entity[] = [];
     let lastHorse : Entity;
     room.state.horses.onAdd = (horse: any, i: number) => {
         log("room.state.horses.onAdd","ENTRY")
         console.log("entro a crear caballo");
-        lastHorse = AddHorse(horse.id,horse.positionX,horse.positionY);
+        lastHorse = AddHorse(horse.id, horse.actualPosition.x, horse.actualPosition.y);
         horses.push(lastHorse);
     };
     
@@ -176,6 +148,8 @@ connect("my_room").then((room) => {
         //log(type)
         console.log(JSON.stringify(message))
         console.log(type)
+        //caballo1 se mueve a la primera posicion
+        MoveHorseForward()
     })
 
     room.onMessage("game-start", () => {
@@ -188,33 +162,9 @@ connect("my_room").then((room) => {
         highestRanking = 0;
         highestPlayer = undefined;
 
-        console.log("grid front");
-        const grid = Array.from(room.state.grid.values());
-        console.log("grid length: " + grid.length);
-        
-        grid.forEach((ring : any) =>
-        {
-            ring.points.forEach((point : any) =>
-            {
-                const pointEntity = engine.addEntity();
-                MeshRenderer.setSphere(pointEntity);
-                Transform.create(pointEntity,{
-                    position:{
-                        x : point.x,
-                        y : 1,
-                        z : point.y,
-                    },
-                    scale:{
-                        x : 0.25,
-                        y : 0.25,
-                        z : 0.25
-                    }
-                })
-            }
-            )
-        })
+  
         //caballo1 se mueve a la primera posicion
-        MoveHorse(0, horses[0],room)
+        MoveHorseForward()
 
         //countdown.show();
     });
