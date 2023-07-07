@@ -79,28 +79,6 @@ connect("my_room").then((room) => {
         
     }
 
-    /*
-    // The "floor" object was originally named "entity" from the Decentraland Builder.
-    // I exported it from the "./scene" file to be able to attach custom behaviour.
-    utils.triggers.enableDebugDraw(true)
-    
-    addRepeatTrigger(
-        Vector3.create(16, 2, 16), Vector3.create(0, 0, 0),
-        (entity:Entity) => { 
-            log('player.enter.floorTriggerShape',entity)
-            if (lastBlockTouched > 2 && lastBlockTouched < 20) {
-                room.send("fall", Transform.get(engine.PlayerEntity).position);
-            }
-        },
-        floor,
-        false,
-        () => {
-            log('player.exit.floorTriggerShape')
-        }
-    )
-    */
-
-
     let horses : Entity[] = [];
     let lastHorse : Entity;
     room.state.horses.onAdd = (horse: any, i: number) => {

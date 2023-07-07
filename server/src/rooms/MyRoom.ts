@@ -50,8 +50,6 @@ export class MyRoom extends Room<MyRoomState> {
       }
       this.state.grid.push(newRing);
     }
-
-    console.log("grid is created")
   }
 
   getRing(ringID : number) : Ring
