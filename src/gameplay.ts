@@ -8,7 +8,7 @@ import { log } from './back-ports/backPorts';
 import { AudioSource, Entity, MeshCollider, MeshRenderer, Transform, engine } from '@dcl/sdk/ecs';
 import { Vector3 } from '@dcl/sdk/math';
 import { addRepeatTrigger } from './Utils';
-import { AddHorse } from './horses';
+import { AddHorse, MoveHorse } from './horses';
 
 
 let nodesX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -141,8 +141,8 @@ connect("my_room").then((room) => {
     room.state.horses.onAdd = (horse: any, i: number) => {
         log("room.state.horses.onAdd","ENTRY")
         console.log("entro a crear caballo");
-        lastHorse = AddHorse(horse.positionX,horse.positionY);
-        horses.push(lastBox);
+        lastHorse = AddHorse(horse.id,horse.positionX,horse.positionY);
+        horses.push(lastHorse);
     };
     
     let highestRanking = 0;
@@ -191,6 +191,7 @@ connect("my_room").then((room) => {
         console.log("grid front");
         const grid = Array.from(room.state.grid.values());
         console.log("grid length: " + grid.length);
+        
         grid.forEach((ring : any) =>
         {
             ring.points.forEach((point : any) =>
@@ -212,6 +213,9 @@ connect("my_room").then((room) => {
             }
             )
         })
+        //caballo1 se mueve a la primera posicion
+        MoveHorse(0, horses[0],room)
+
         //countdown.show();
     });
 
