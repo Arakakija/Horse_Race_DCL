@@ -5,8 +5,12 @@ const GAME_STATUS = Object.freeze({
   WAITING_FOR_PLAYERS: 'WAITING_FOR_PLAYER',
   IN_PROGRESS: 'IN_PROGRESS',
   FINISHED: 'FINISHED',
-  PLACING_BETS: 'PLACING_BETS'
+  PLACING_BETS: 'PLACING_BETS',
 });
+
+function getRandomNumber(min: number, max: number): number {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
+}
 
 const LOBBY_TIME = 40
 const ROUND_DURATION = 20;
@@ -121,7 +125,41 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   nextRound(){
-     
+      this.broadcast('horse-move', {horses: this.state.horses})
+      this.state.horses.get(this.state.currentHorse)
+      ///move horse
+      
+      const currentHorse =  this.getRandomHorse();
+      currentHorse.position+1
+      if(this.checkIfHorseWon(currentHorse)){
+        this.endGame(currentHorse)
+      }else{
+        this.checkIfHorsesMustGoBack()
+        this.broadcast('horse-moved', {horse: currentHorse})
+        this.nextRound()
+      }
+    
+  }
+  getRandomHorse(){
+    const horseID = String(getRandomNumber(1,5));
+    return this.state.horses.get(horseID)
+  }
+
+  checkIfHorsesMustGoBack(){
+    let counter = 0;
+    this.state.horses.forEach((horse)=>{
+      if(horse.position >= this.state.backPosition){ counter++ }
+    })
+    if(counter>=4){
+      const horse = this.getRandomHorse()
+      horse.position--
+      this.broadcast('horse-moved', {horse})
+    }
+
+  }
+
+  checkIfHorseWon(horse: Horse){
+    return horse.position >= this.state.winPosition;
   }
 
   setLobbyClock(){
@@ -175,7 +213,9 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   endGame(horse: Horse){
-    this.broadcast("end-game", horse);
+    this.state.gameStatus = GAME_STATUS.FINISHED;
+    this.state.backPosition = 1;
+    this.broadcast("end-game", {horse});
   }
 
 }
