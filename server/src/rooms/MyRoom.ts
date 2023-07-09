@@ -12,9 +12,9 @@ function getRandomNumber(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const LOBBY_TIME = 40
+const LOBBY_TIME = 5
 const ROUND_DURATION = 20;
-const BETTING_TIME = 30;
+const BETTING_TIME = 5;
 
 export class MyRoom extends Room<MyRoomState> {
   onCreate (options: any) {
@@ -24,6 +24,10 @@ export class MyRoom extends Room<MyRoomState> {
 
     this.onMessage('move-horse', (client:Client, message)=>{
         console.log("horse moved")
+    })
+
+    this.onMessage('select-horse', (client:Client, message)=>{
+      this.playerSelectsHorse(client, message)
     })
   }
 
@@ -195,13 +199,10 @@ export class MyRoom extends Room<MyRoomState> {
     this.setLobbyClock();
   }
 
-  playerSelectsHorse(){
+  playerSelectsHorse(client: Client, message: any){
     if(this.state.gameStatus === GAME_STATUS.PLACING_BETS){
-      this.onMessage('select-horse', (client:Client, message)=>{
-        console.log("Selected Horse", message);
         const player = this.state.players.get(client.sessionId);
         player.horseID = message.horseID;
-      })
     }
   }
 
