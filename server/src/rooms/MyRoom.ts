@@ -13,7 +13,7 @@ function getRandomNumber(min: number, max: number): number {
 }
 
 const LOBBY_TIME =10
-const ROUND_DURATION = 20;
+const ROUND_DURATION = 5;
 const BETTING_TIME = 10;
 
 export class MyRoom extends Room<MyRoomState> {
@@ -35,9 +35,9 @@ export class MyRoom extends Room<MyRoomState> {
     const centerPoint: Point = new Point({x : 8, y : 8});
     const radius = 5;
     const numberOfRings = 4;
-    const numberOfSegments = 12;
+    const numberOfSegments = 4;
+    this.state.winPosition = numberOfSegments
     this.createCircularGrid(centerPoint,radius,numberOfRings,numberOfSegments);
-    this.resetHorses()
     this.clock.clear();
     this.startWaitingPlayers()
   }
@@ -134,8 +134,9 @@ export class MyRoom extends Room<MyRoomState> {
         this.checkIfHorsesMustGoBack()
         this.broadcast('horse-moved', currentHorse.toJSON())
         //this.nextRound()
+        this.clock.clear()
+        this.state.roundTime = ROUND_DURATION
         this.clock.setInterval(()=>{
-          this.state.roundTime = ROUND_DURATION
           if(this.state.roundTime > 0){
             this.state.roundTime--
             this.broadcast('time-to-next-round', { time: this.state.roundTime });
@@ -160,6 +161,7 @@ export class MyRoom extends Room<MyRoomState> {
     if(counter>=4){
       const horse = this.getRandomHorse()
       horse.position--
+      horse.actualPosition = this.getPosition(horse.id, horse.position)
       this.broadcast('horse-moved', {horse})
     }
 
@@ -178,6 +180,7 @@ export class MyRoom extends Room<MyRoomState> {
   }
   
   setLobbyClock(){
+    this.resetHorses()
     this.clock.start();
     this.state.lobbyWaitingTime = LOBBY_TIME;
     this.clock.setInterval(() => {
@@ -228,6 +231,7 @@ export class MyRoom extends Room<MyRoomState> {
     this.state.gameStatus = GAME_STATUS.FINISHED;
     this.state.backPosition = 1;
     this.broadcast("end-game", {horse});
+    this.setLobbyClock()
   }
 
 }

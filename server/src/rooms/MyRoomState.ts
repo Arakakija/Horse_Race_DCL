@@ -35,7 +35,7 @@ export class MyRoomState extends Schema {
   @type("number") countdown: number;
   @type("string") currentHorse: string;
   @type([Block]) blocks = new ArraySchema<Block>();//TODO sacar
-  @type("number") winPosition : number = 11;
+  @type("number") winPosition : number;
   @type("number") maxPlayers : number = 32;
   @type("number") lobbyWaitingTime : number;
   @type("number") bettingTime : number;
