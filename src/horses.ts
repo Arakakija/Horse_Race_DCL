@@ -43,35 +43,3 @@ export function MoveHorse(horse : Entity, endPosition : Vector3) {
 
     utils.tweens.startTranslation(horse,horsePosition.position,endPosition,1.0);
 }
-
-export function BackHorse(horseId : number,horse : Entity,room : Room) {
-    const horsePosition = Transform.getMutable(horse);
-    const horseComponent = Horse.getMutable(horse);
-
-
-    const grid = Array.from(room.state.grid.values());
-    let point : any;
-    let i = 0; 
-    grid.forEach((ring : any) =>
-    {
-            if(i === horseId)
-            {
-                if(horseComponent.actualPosition > 0)
-                {
-                    point = ring.points[horseComponent.actualPosition - 1]
-                    horseComponent.actualPosition--;
-                    i++;
-                }
-                else{
-                    point = ring.points[0]
-                    horseComponent.actualPosition = 0;
-                }
-                return;
-            } 
-            else{
-                i++;
-            }
-    })
-    horsePosition.position.x = point.x;
-    horsePosition.position.z = point.y;
-}
