@@ -112,7 +112,7 @@ export class MyRoom extends Room<MyRoomState> {
       this.checkPlayers()
       if(this.state.bettingTime > 0){
         this.state.bettingTime--
-        this.broadcast('bet-time-remaining', { time: this.state.bettingTime });
+        this.broadcast('bet-time-remaining', this.state.bettingTime);
       }else{
         this.clock.clear()
         this.state.gameStatus = GAME_STATUS.IN_PROGRESS;
@@ -141,7 +141,7 @@ export class MyRoom extends Room<MyRoomState> {
         this.clock.setInterval(()=>{
           if(this.state.roundTime > 0){
             this.state.roundTime--
-            this.broadcast('time-to-next-round', { time: this.state.roundTime });
+            this.broadcast('time-to-next-round', this.state.roundTime);
           }else{
             this.clock.clear()
             this.nextRound();
@@ -193,7 +193,7 @@ export class MyRoom extends Room<MyRoomState> {
     this.clock.setInterval(() => {
       if(this.state.lobbyWaitingTime > 0){
         this.state.lobbyWaitingTime--
-        this.broadcast('waiting-players-time', { time: this.state.lobbyWaitingTime });
+        this.broadcast('waiting-players-time', this.state.lobbyWaitingTime);
       }else{
         if(this.minimumPlayersIn()){
           this.clock.clear();
