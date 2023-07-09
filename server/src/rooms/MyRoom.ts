@@ -134,7 +134,6 @@ export class MyRoom extends Room<MyRoomState> {
       currentHorse.position+1;
       currentHorse.actualPosition = this.getPosition(currentHorse.id, currentHorse.position)
 
-      this.broadcast('horse-moved', {})
       if(this.checkIfHorseWon(currentHorse)){
         this.endGame(currentHorse)
       }else{
