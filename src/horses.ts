@@ -35,9 +35,8 @@ export function AddHorse(horseId: number, positionX : number, positionY: number)
 
 export function MoveHorse(horse : Entity, endPosition : Vector3) {
     const horsePosition = Transform.getMutable(horse);
-    
-    horsePosition.position.x = endPosition.x;
-    horsePosition.position.z = endPosition.y;
+
+    utils.tweens.startTranslation(horse,horsePosition.position,endPosition,1.0);
 }
 
 export function BackHorse(horseId : number,horse : Entity,room : Room) {

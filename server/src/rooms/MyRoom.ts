@@ -12,7 +12,7 @@ function getRandomNumber(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const LOBBY_TIME = 10
+const LOBBY_TIME =10
 const ROUND_DURATION = 20;
 const BETTING_TIME = 10;
 
@@ -124,7 +124,7 @@ export class MyRoom extends Room<MyRoomState> {
 
   nextRound(){
       const currentHorse =  this.getRandomHorse();
-      currentHorse.position+1;
+      currentHorse.position++;
       currentHorse.actualPosition = this.getPosition(currentHorse.id, currentHorse.position)
 
       if(this.checkIfHorseWon(currentHorse)){
