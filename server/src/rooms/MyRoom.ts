@@ -131,15 +131,15 @@ export class MyRoom extends Room<MyRoomState> {
 
   nextRound(){
       const currentHorse =  this.getRandomHorse();
-      console.log(currentHorse)
       currentHorse.position+1;
       currentHorse.actualPosition = this.getPosition(currentHorse.id, currentHorse.position)
-      this.broadcast('horse-moved', {horse: currentHorse.toJSON()})
+
+      this.broadcast('horse-moved', {})
       if(this.checkIfHorseWon(currentHorse)){
         this.endGame(currentHorse)
       }else{
         this.checkIfHorsesMustGoBack()
-        this.broadcast('horse-moved', {horse: currentHorse})
+        this.broadcast('horse-moved', currentHorse.toJSON())
         //this.nextRound()
       }
     

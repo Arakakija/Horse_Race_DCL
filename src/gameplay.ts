@@ -53,10 +53,12 @@ connect("my_room").then((room) => {
     let horses : Entity[] = [];
     let lastHorse : Entity;
     room.state.horses.onAdd = (horse: any, i: number) => {
-        log("room.state.horses.onAdd","ENTRY")
+        log("room.state.horses.onAdd","ENTRY");
         console.log("entro a crear caballo");
         lastHorse = AddHorse(horse.id, horse.actualPosition.x, horse.actualPosition.y);
+        console.log(lastHorse)
         horses.push(lastHorse);
+        
     };
     
     let highestRanking = 0;
@@ -86,10 +88,9 @@ connect("my_room").then((room) => {
     })
 
     room.onMessage("*", (type, message)=>{
-        //log(JSON.stringify(message))
-        //log(type)
-        console.log(JSON.stringify(message))
-        console.log(type)
+        log(JSON.stringify(message))
+        log(type)
+
         //caballo1 se mueve a la primera posicion
     })
 
@@ -135,7 +136,14 @@ connect("my_room").then((room) => {
     });
 
     room.onMessage('horse-moved',(horse) => {
-       MoveHorse(horses[horse.id],Vector3.create(horse.actualPosition.x,Transform.get(horses[horse.id]).position.y, horse.actualPosition.Y));
+        
+        console.log("HORSE LIST", horses)               
+        const selectedfHorse = horses[0];
+        console.log('SELECTED HORSE', selectedfHorse)
+        console.log(horse.actualPosition)
+        //console.log("SOCKET HORSE X", horse.actualPosition['x'])
+        //console.log("SOCKET HORSE Y", horse.actualPosition['y'])
+        //MoveHorse(selectedfHorse,Vector3.create(horse.actualPosition.x,Transform.get(selectedfHorse).position.y, horse.actualPosition.y));
     });
     
 
