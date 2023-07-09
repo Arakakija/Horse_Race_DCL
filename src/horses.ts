@@ -3,6 +3,7 @@ import {
     engine,
     MeshRenderer,
     Transform,
+    GltfContainer,
   } from '@dcl/sdk/ecs'
 import { ResetHorse } from './systems';
 import * as utils from '@dcl-sdk/utils'
@@ -17,7 +18,11 @@ function createHorse(horseId : number,positionX : number, positionY: number) : E
         id : horseId,
         actualPosition: 0
     })
-    MeshRenderer.setSphere(horseEntity)
+    
+    GltfContainer.create(horseEntity,{
+        src:"assets/scene/seahorse-1.glb"
+    })
+
     Transform.create(horseEntity,{position:{x : positionX, y : 1, z : positionY}})
     utils.triggers.oneTimeTrigger(horseEntity,
         utils.LAYER_1,
