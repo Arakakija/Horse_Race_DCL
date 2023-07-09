@@ -42,6 +42,7 @@ export class MyRoomState extends Schema {
   @type("number") poolPrice : number;
   @type("number") backPosition : number = 1;
   @type("string") gameStatus: string;
+  @type("number") roundTime : number
   @type({ map: Player }) players = new MapSchema<Player>();  
   @type({map: Horse}) horses = new MapSchema<Horse>();
   @type([Ring]) grid = new ArraySchema<Ring>();

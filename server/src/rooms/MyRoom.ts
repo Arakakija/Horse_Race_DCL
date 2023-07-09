@@ -110,9 +110,10 @@ export class MyRoom extends Room<MyRoomState> {
     this.state.gameStatus = GAME_STATUS.PLACING_BETS;
     this.state.bettingTime = BETTING_TIME
     this.clock.setInterval(()=>{
+      this.checkPlayers()
       if(this.state.bettingTime > 0){
         this.state.bettingTime--
-        this.broadcast('betting-timer', { time: this.state.bettingTime });
+        this.broadcast('bet-time-remaining', { time: this.state.bettingTime });
       }else{
         this.clock.clear()
         this.state.gameStatus = GAME_STATUS.IN_PROGRESS;
@@ -133,6 +134,16 @@ export class MyRoom extends Room<MyRoomState> {
         this.checkIfHorsesMustGoBack()
         this.broadcast('horse-moved', currentHorse.toJSON())
         //this.nextRound()
+        this.clock.setInterval(()=>{
+          this.state.roundTime = ROUND_DURATION
+          if(this.state.roundTime > 0){
+            this.state.roundTime--
+            this.broadcast('time-to-next-round', { time: this.state.roundTime });
+          }else{
+            this.clock.clear()
+            this.nextRound();
+          }
+        }, 1000)
       }
     
   }
@@ -157,14 +168,22 @@ export class MyRoom extends Room<MyRoomState> {
   checkIfHorseWon(horse: Horse){
     return horse.position >= this.state.winPosition;
   }
+  
+  checkPlayers(){
+    if(this.state.players.size === 0){
+      this.clock.clear()
+      this.startWaitingPlayers();
+    }
 
+  }
+  
   setLobbyClock(){
     this.clock.start();
     this.state.lobbyWaitingTime = LOBBY_TIME;
     this.clock.setInterval(() => {
       if(this.state.lobbyWaitingTime > 0){
         this.state.lobbyWaitingTime--
-        this.broadcast('lobby-timer', { time: this.state.lobbyWaitingTime });
+        this.broadcast('waiting-players-time', { time: this.state.lobbyWaitingTime });
       }else{
         if(this.minimumPlayersIn()){
           this.clock.clear();
@@ -185,7 +204,6 @@ export class MyRoom extends Room<MyRoomState> {
   
   startWaitingPlayers(){
     this.state.gameStatus = GAME_STATUS.WAITING_FOR_PLAYERS;
-    this.broadcast('waiting-players', {});
     this.setLobbyClock();
   }
 
