@@ -1,6 +1,6 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
-import { waitingForPlayer } from './gameplay'
+import { gameStatus, timeToWait } from './gameplay'
 
 const uiComponent = () => (
   <UiEntity
@@ -17,8 +17,10 @@ const uiComponent = () => (
             height: 100,
             margin: { top: '0%', left: '40%' }
         }}
-        uiText={{ value: 'Waiting for players: ' + waitingForPlayer , fontSize: 30 }}
+        uiText={{ value: gameStatus + timeToWait , fontSize: 30 }}
     />
+
+    
   </UiEntity>
 )
 

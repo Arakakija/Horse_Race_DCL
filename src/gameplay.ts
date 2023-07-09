@@ -16,7 +16,8 @@ let nodesX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 let nodesY = [0, 1, 2, 3, 4, 5, 6]
 let shouldMove = false
 
-export let waitingForPlayer : number;
+export let timeToWait : number;
+export let gameStatus : string;
 
 export function initGamePlay(){
     // play ambient music
@@ -174,9 +175,25 @@ connect("my_room").then((room) => {
     });
 
     room.onMessage('waiting-players-time', (message) => {
-        console.log("TIME WAIT ", message);
-        waitingForPlayer = message;
+        gameStatus = "Waiting for players: ";
+        timeToWait = message;
+
     })
+
+    room.onMessage('time-to-next-round', (message) => {
+        console.log("TIME WAIT ", message);
+        gameStatus = "Next Round: ";
+        timeToWait = message;
+
+    })
+
+
+    room.onMessage('bet-time-remaining', (message) => {
+        gameStatus = "Place your bets!: ";
+        timeToWait = message;
+
+    })
+    
     
 
     room.onLeave((code) => {
