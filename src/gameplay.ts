@@ -16,6 +16,8 @@ let nodesX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
 let nodesY = [0, 1, 2, 3, 4, 5, 6]
 let shouldMove = false
 
+export let waitingForPlayer : number;
+
 export function initGamePlay(){
     // play ambient music
     playLoop(ambienceSound, 0.4);
@@ -170,6 +172,11 @@ connect("my_room").then((room) => {
             MoveHorse(selectedfHorse,Vector3.create(horse.actualPosition.x,Transform.get(selectedfHorse).position.y, horse.actualPosition.y), horse.actualPosition.rotation);
         }
     });
+
+    room.onMessage('waiting-players-time', (message) => {
+        console.log("TIME WAIT ", message);
+        waitingForPlayer = message;
+    })
     
 
     room.onLeave((code) => {

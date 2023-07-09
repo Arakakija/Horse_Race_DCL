@@ -193,7 +193,7 @@ export class MyRoom extends Room<MyRoomState> {
     this.clock.setInterval(() => {
       if(this.state.lobbyWaitingTime > 0){
         this.state.lobbyWaitingTime--
-        this.broadcast('waiting-players-time', { time: this.state.lobbyWaitingTime });
+        this.broadcast('waiting-players-time', this.state.lobbyWaitingTime);
       }else{
         if(this.minimumPlayersIn()){
           this.clock.clear();

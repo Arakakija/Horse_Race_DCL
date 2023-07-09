@@ -5,6 +5,7 @@ import { initGamePlay } from "./gameplay";
 
 import "./polyfill/delcares";
 import { initStatic } from "./scene";
+import { setupUi } from "./ui";
 
  
 // export all the functions required to make the scene work
@@ -13,4 +14,5 @@ export * from '@dcl/sdk'
 export function main(){
     //initStatic() 
     initGamePlay() 
+    setupUi()
 }
