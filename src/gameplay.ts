@@ -136,14 +136,12 @@ connect("my_room").then((room) => {
     });
 
     room.onMessage('horse-moved',(horse) => {
-        
-        console.log("HORSE LIST", horses)               
-        const selectedfHorse = horses[0];
-        console.log('SELECTED HORSE', selectedfHorse)
-        console.log(horse.actualPosition)
-        //console.log("SOCKET HORSE X", horse.actualPosition['x'])
-        //console.log("SOCKET HORSE Y", horse.actualPosition['y'])
-        //MoveHorse(selectedfHorse,Vector3.create(horse.actualPosition.x,Transform.get(selectedfHorse).position.y, horse.actualPosition.y));
+        const selectedfHorse = horses.find((h)=>{
+            return Horse.get(h).id === horse.id;
+        })
+        if(selectedfHorse){
+            MoveHorse(selectedfHorse,Vector3.create(horse.actualPosition.x,Transform.get(selectedfHorse).position.y, horse.actualPosition.y));
+        }
     });
     
 
