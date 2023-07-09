@@ -593,6 +593,27 @@
             },
             "parent": 0
           }
+        },
+        "538": {
+          "json": {
+            "position": {
+              "x": 19.5,
+              "y": 7.25,
+              "z": 7.5
+            },
+            "rotation": {
+              "x": 0,
+              "y": 0,
+              "z": 0,
+              "w": 1
+            },
+            "scale": {
+              "x": 4,
+              "y": 4,
+              "z": 4
+            },
+            "parent": 0
+          }
         }
       }
     },
@@ -723,6 +744,11 @@
         "537": {
           "json": {
             "src": "assets/scene/tribune-3.glb"
+          }
+        },
+        "538": {
+          "json": {
+            "src": "assets/scene/Roulette.glb"
           }
         }
       }
@@ -859,6 +885,11 @@
           "json": {
             "value": "tribune-3.glb"
           }
+        },
+        "538": {
+          "json": {
+            "value": "Roulette.glb"
+          }
         }
       }
     },
@@ -875,7 +906,7 @@
         "serializationType": "map"
       },
       "data": {
-        "525": {
+        "538": {
           "json": {
             "gizmo": 0
           }
@@ -933,13 +964,13 @@
           "json": {
             "layout": {
               "base": {
-                "x": 10,
-                "y": 10
+                "x": 0,
+                "y": 0
               },
               "parcels": [
                 {
-                  "x": 10,
-                  "y": 10
+                  "x": 0,
+                  "y": 0
                 }
               ]
             }
