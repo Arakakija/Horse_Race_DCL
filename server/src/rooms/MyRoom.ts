@@ -12,9 +12,9 @@ function getRandomNumber(min: number, max: number): number {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-const LOBBY_TIME = 5
+const LOBBY_TIME = 10
 const ROUND_DURATION = 20;
-const BETTING_TIME = 5;
+const BETTING_TIME = 10;
 
 export class MyRoom extends Room<MyRoomState> {
   onCreate (options: any) {
@@ -130,24 +130,22 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   nextRound(){
-      this.broadcast('horse-move', {horses: this.state.horses})
-      this.state.horses.get(this.state.currentHorse)
-      ///move horse
-      
       const currentHorse =  this.getRandomHorse();
+      console.log(currentHorse)
       currentHorse.position+1;
       currentHorse.actualPosition = this.getPosition(currentHorse.id, currentHorse.position)
+      this.broadcast('horse-moved', {horse: currentHorse})
       if(this.checkIfHorseWon(currentHorse)){
         this.endGame(currentHorse)
       }else{
         this.checkIfHorsesMustGoBack()
         this.broadcast('horse-moved', {horse: currentHorse})
-        this.nextRound()
+        //this.nextRound()
       }
     
   }
   getRandomHorse(){
-    const horseID = String(getRandomNumber(1,5));
+    const horseID = String(getRandomNumber(1,4));
     return this.state.horses.get(horseID)
   }
 
