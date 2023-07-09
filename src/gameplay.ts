@@ -88,8 +88,8 @@ connect("my_room").then((room) => {
     })
 
     room.onMessage("*", (type, message)=>{
-        log(JSON.stringify(message))
-        log(type)
+        console.log(JSON.stringify(message))
+        console.log(type)
 
         //caballo1 se mueve a la primera posicion
     })

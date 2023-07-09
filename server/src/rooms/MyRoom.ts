@@ -114,17 +114,10 @@ export class MyRoom extends Room<MyRoomState> {
         this.state.bettingTime--
         this.broadcast('betting-timer', { time: this.state.bettingTime });
       }else{
-        
-        //if(this.allPlayersSelectedAHorse()){
-        if(true){
-          this.clock.clear()
-          this.state.gameStatus = GAME_STATUS.IN_PROGRESS;
-          this.broadcast("game-start");
-          this.nextRound();
-        }else{
-          this.clock.clear()
-          this.startGame(true);
-        }
+        this.clock.clear()
+        this.state.gameStatus = GAME_STATUS.IN_PROGRESS;
+        this.broadcast("game-start");
+        this.nextRound();
       }
     }, 1000)
   }
