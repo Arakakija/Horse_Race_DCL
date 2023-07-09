@@ -50,12 +50,11 @@ export class MyRoom extends Room<MyRoomState> {
       const currentRadius = distanceBetweenRings * (ring + 1);
       const newRing = new Ring();
       
-  
       for (let segment = 0; segment < segments; segment++) {
         const angle = (segment * anglePerSegment * Math.PI) / 180; // Convert degrees to radians
         const newX = center.x + currentRadius * Math.cos(angle);
         const newY = center.y + currentRadius * Math.sin(angle);
-        newRing.points.push(new Point().assign({x : newX, y : newY}));
+        newRing.points.push(new Point().assign({x : newX, y : newY, rotation : angle}));
       }
       this.state.grid.push(newRing);
     }

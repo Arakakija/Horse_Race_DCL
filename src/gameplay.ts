@@ -60,7 +60,33 @@ connect("my_room").then((room) => {
         horses.push(lastHorse);
         
     };
-    
+
+    //TODO: REMOVE THIS
+    let pointsPreview : Entity[] = [];
+    let lastPointPreview : Entity;
+    room.state.grid.onAdd = (ring: any, i: number) => {
+        log("room.state.grid.onAdd","ENTRY");
+        ring.points.forEach((point : any) => {
+            lastPointPreview = engine.addEntity()
+            MeshRenderer.setSphere(lastPointPreview);
+            Transform.create(lastPointPreview,
+                {
+                    position : {
+                        x : point.x,
+                        y : 1,
+                        z : point.y, 
+                    }
+                })
+            pointsPreview.push(lastPointPreview);
+        });
+    };
+    const allPoints = Array.from(room.state.grid.values());
+    allPoints.forEach((ring :any ) => {
+
+    }
+    )
+
+
     let highestRanking = 0;
     let highestPlayer: any = undefined;
     room.state.players.onAdd = (player: any, sessionId: string) => {
@@ -111,6 +137,7 @@ connect("my_room").then((room) => {
   
         //caballo1 se mueve a la primera posicion
 
+
         //countdown.show();
     });
 
@@ -140,7 +167,7 @@ connect("my_room").then((room) => {
             return Horse.get(h).id === horse.id;
         })
         if(selectedfHorse){
-            MoveHorse(selectedfHorse,Vector3.create(horse.actualPosition.x,Transform.get(selectedfHorse).position.y, horse.actualPosition.y));
+            MoveHorse(selectedfHorse,Vector3.create(horse.actualPosition.x,Transform.get(selectedfHorse).position.y, horse.actualPosition.y), horse.actualPosition.rotation);
         }
     });
     

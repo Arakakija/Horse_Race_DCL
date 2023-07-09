@@ -11,6 +11,7 @@ export class Player extends Schema {
 export class Point extends Schema {
   @type("number") x: number;
   @type("number") y: number;
+  @type("number") rotation : number;
 }
 
 export class Ring extends Schema {
