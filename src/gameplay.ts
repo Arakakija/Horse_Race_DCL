@@ -8,7 +8,7 @@ import { log } from './back-ports/backPorts';
 import { AudioSource, Entity, MeshCollider, MeshRenderer, Transform, engine } from '@dcl/sdk/ecs';
 import { Vector3 } from '@dcl/sdk/math';
 import { addRepeatTrigger, getRandomNumber } from './Utils';
-import { AddHorse, MoveHorse } from './horses';
+import { AddHorse, MoveHorse, RestartHorses } from './horses';
 import { Horse } from './custom-components';
 
 
@@ -159,7 +159,7 @@ connect("my_room").then((room) => {
     });
 
     room.onMessage("restart", () => {
-        playOnce(countdownRestartSound);
+        horses.forEach((horse) => RestartHorses(horse));
     });
 
     room.onMessage('horse-moved',(horse) => {

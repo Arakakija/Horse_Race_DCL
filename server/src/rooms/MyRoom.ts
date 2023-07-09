@@ -128,10 +128,13 @@ export class MyRoom extends Room<MyRoomState> {
       currentHorse.actualPosition = this.getPosition(currentHorse.id, currentHorse.position)
 
       if(this.checkIfHorseWon(currentHorse)){
+        currentHorse.position = 0;
+        currentHorse.actualPosition = this.getPosition(currentHorse.id, currentHorse.position)
+        this.broadcast('horse-moved', currentHorse.toJSON())
         this.endGame(currentHorse)
       }else{
-        this.checkIfHorsesMustGoBack()
         this.broadcast('horse-moved', currentHorse.toJSON())
+        this.checkIfHorsesMustGoBack()
         //this.nextRound()
         this.clock.clear()
         this.state.roundTime = ROUND_DURATION
@@ -155,13 +158,17 @@ export class MyRoom extends Room<MyRoomState> {
   checkIfHorsesMustGoBack(){
     let counter = 0;
     this.state.horses.forEach((horse)=>{
-      if(horse.position >= this.state.backPosition){ counter++ }
+      if(horse.position >= this.state.backPosition){ 
+        counter++ 
+      console.log("Counter: " + counter)
+    }
     })
     if(counter>=4){
       const horse = this.getRandomHorse()
+      this.state.backPosition++;
       horse.position--
       horse.actualPosition = this.getPosition(horse.id, horse.position)
-      this.broadcast('horse-moved', {horse})
+      this.broadcast('horse-moved', horse.toJSON())
     }
 
   }
@@ -180,6 +187,7 @@ export class MyRoom extends Room<MyRoomState> {
   
   setLobbyClock(){
     this.resetHorses()
+    this.broadcast('restart');
     this.clock.start();
     this.state.lobbyWaitingTime = LOBBY_TIME;
     this.clock.setInterval(() => {

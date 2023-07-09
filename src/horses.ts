@@ -14,7 +14,8 @@ function createHorse(horseId : number,positionX : number, positionY: number) : E
     console.log("creando entity");
     Horse.create(horseEntity,{
         id : horseId,
-        actualPosition: 0
+        actualPosition: 0,
+        startPosition: Vector3.create(positionX, 1, positionY),
     })
     
     const sourceFilePath = 'assets/scene/seahorse-'+ (horseId) +'.glb'
@@ -23,7 +24,7 @@ function createHorse(horseId : number,positionX : number, positionY: number) : E
     })
 
     Transform.create(horseEntity,{
-        position:{x : positionX, y : 1, z : positionY},
+        position: Horse.get(horseEntity).startPosition,
     })
     utils.triggers.oneTimeTrigger(horseEntity,
         utils.LAYER_1,
@@ -36,6 +37,16 @@ function createHorse(horseId : number,positionX : number, positionY: number) : E
 export function AddHorse(horseId: number, positionX : number, positionY: number) {
     const horse = createHorse(horseId,positionX,positionY)
     return horse;
+}
+
+export function RestartHorses(horse : Entity)
+{
+    const horseEntity =  Horse.getMutable(horse);
+    const horseTransform = Transform.getMutable(horse);
+    horseEntity.actualPosition = 0;
+    horseTransform.position = horseEntity.startPosition;
+    horseTransform.rotation = Quaternion.Zero();
+
 }
 
 
