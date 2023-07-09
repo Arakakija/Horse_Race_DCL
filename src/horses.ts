@@ -8,6 +8,7 @@ import { ResetHorse } from './systems';
 import * as utils from '@dcl-sdk/utils'
 import { Horse } from './custom-components';
 import { Room } from 'colyseus.js';
+import { Vector3 } from '@dcl/sdk/math';
 
 function createHorse(horseId : number,positionX : number, positionY: number) : Entity{
     const horseEntity = engine.addEntity();
@@ -32,36 +33,11 @@ export function AddHorse(horseId: number, positionX : number, positionY: number)
 }
 
 
-export function MoveHorse(horseId : number,horse : Entity,room : Room) {
+export function MoveHorse(horse : Entity, endPosition : Vector3) {
     const horsePosition = Transform.getMutable(horse);
-    const horseComponent = Horse.getMutable(horse);
-
- 
-    const grid = Array.from(room.state.grid.values());
-    let point : any;
-    let i = 0; 
-    grid.forEach((ring : any) =>
-    {
-            if(i === horseId)
-            {
-                if(horseComponent.actualPosition < 12)
-                {
-                    point = ring.points[horseComponent.actualPosition + 1]
-                    horseComponent.actualPosition++;
-                    i++;
-                }
-                else{
-                    point = ring.points[0]
-                    horseComponent.actualPosition = 0;
-                }
-                return;
-            } 
-            else{
-                i++;
-            }
-    })
-    horsePosition.position.x = point.x;
-    horsePosition.position.z = point.y;
+    
+    horsePosition.position.x = endPosition.x;
+    horsePosition.position.z = endPosition.y;
 }
 
 export function BackHorse(horseId : number,horse : Entity,room : Room) {

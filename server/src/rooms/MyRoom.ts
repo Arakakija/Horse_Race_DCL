@@ -108,10 +108,11 @@ export class MyRoom extends Room<MyRoomState> {
     this.clock.setInterval(()=>{
       if(this.state.bettingTime > 0){
         this.state.bettingTime--
-        this.broadcast('betting-timer', { time: this.state.lobbyWaitingTime });
+        this.broadcast('betting-timer', { time: this.state.bettingTime });
       }else{
         
-        if(this.allPlayersSelectedAHorse()){
+        //if(this.allPlayersSelectedAHorse()){
+        if(true){
           this.clock.clear()
           this.state.gameStatus = GAME_STATUS.IN_PROGRESS;
           this.broadcast("game-start");
@@ -130,7 +131,8 @@ export class MyRoom extends Room<MyRoomState> {
       ///move horse
       
       const currentHorse =  this.getRandomHorse();
-      currentHorse.position+1
+      currentHorse.position+1;
+      currentHorse.actualPosition = this.getPosition(currentHorse.id, currentHorse.position)
       if(this.checkIfHorseWon(currentHorse)){
         this.endGame(currentHorse)
       }else{
@@ -184,7 +186,7 @@ export class MyRoom extends Room<MyRoomState> {
   }
 
   minimumPlayersIn(){
-    return this.state.players.size > 2
+    return this.state.players.size > 0 // CHANGE TO 2
   }
   
   startWaitingPlayers(){
@@ -196,6 +198,7 @@ export class MyRoom extends Room<MyRoomState> {
   playerSelectsHorse(){
     if(this.state.gameStatus === GAME_STATUS.PLACING_BETS){
       this.onMessage('select-horse', (client:Client, message)=>{
+        console.log("Selected Horse", message);
         const player = this.state.players.get(client.sessionId);
         player.horseID = message.horseID;
       })

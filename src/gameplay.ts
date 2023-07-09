@@ -35,35 +35,6 @@ connect("my_room").then((room) => {
     let lastBlockTouched: number = 0;
     let minPosition = 1;
 
-    function MoveHorseForward() {
-        const randomHorseId  = getRandomNumber(0,3)
-        MoveHorse(randomHorseId, horses[randomHorseId], room);
-        CheckForPositions();
-        room.send("move-horse-forward", randomHorseId);
-    }
-
-    function CheckForPositions()
-    {
-       let i = 0;
-       for(const [horseEntity] of engine.getEntitiesWith(Horse))
-       {
-          if(Horse.get(horseEntity).actualPosition >= minPosition)
-          {
-             i++;
-    
-          }
-       }
-    
-       if(i >= 4)
-       {
-          console.log('Entro');
-          const randomHorseId  = getRandomNumber(0,3)
-          BackHorse(randomHorseId,horses[randomHorseId],room)
-          room.send("move-horse-backwards", randomHorseId)
-          i = 0;
-          minPosition++;
-       }
-    }
 
     function refreshLeaderboard() {
         try{
@@ -120,7 +91,10 @@ connect("my_room").then((room) => {
         console.log(JSON.stringify(message))
         console.log(type)
         //caballo1 se mueve a la primera posicion
-        MoveHorseForward()
+    })
+
+    room.onMessage('place-your-beats',() => {
+        room.send('select-horse',{horseID : "1"});
     })
 
     room.onMessage("game-start", () => {
@@ -135,7 +109,6 @@ connect("my_room").then((room) => {
 
   
         //caballo1 se mueve a la primera posicion
-        MoveHorseForward()
 
         //countdown.show();
     });
@@ -160,6 +133,11 @@ connect("my_room").then((room) => {
     room.onMessage("restart", () => {
         playOnce(countdownRestartSound);
     });
+
+    room.onMessage('horse-moved',(horse) => {
+       MoveHorse(horses[horse.id],Vector3.create(horse.actualPosition.x,Transform.get(horses[horse.id]).position.y, horse.actualPosition.Y));
+    });
+    
 
     room.onLeave((code) => {
         log("onLeave, code =>", code);
