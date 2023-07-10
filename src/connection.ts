@@ -31,7 +31,7 @@ export async function connect(roomName: string, options: any = {}) {
     // const ENDPOINT = "wss://hept-j.colyseus.dev";
     const ENDPOINT = (isPreview)
         ? "ws://127.0.0.1:2567" // local environment
-        : "wss://hept-j.colyseus.dev"; // production environment
+        : "wss://horse-race-websocket.onrender.com:10000"; // production environment
 
     if (isPreview) { addConnectionDebugger(ENDPOINT); }
     const client = new Client(ENDPOINT);
