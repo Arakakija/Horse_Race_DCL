@@ -20,6 +20,7 @@ let shouldMove = false
 export let timeToWait : number;
 export let playerCash : number;
 export let gameStatus : string;
+export let canBet : boolean = true;
 
 export function initGamePlay(){
     // play ambient music
@@ -56,6 +57,7 @@ connect("my_room").then((room) => {
     }
 
     function PlaceBet(){
+        if(!canBet) return;
         console.log("HORSE SELECTED " + betHorse)
         room.send('select-horse',{horseID : betHorse});
     };
@@ -134,6 +136,7 @@ connect("my_room").then((room) => {
 
     room.onMessage('place-your-beats',() => {
         //room.send('select-horse',{horseID : "1"});
+        canBet = true;
     })
 
     room.onMessage("game-start", () => {
@@ -208,6 +211,7 @@ connect("my_room").then((room) => {
 
     room.onMessage('bet-placed',(data) =>{
         playerCash = data;
+        canBet = false;
     })
     
     
