@@ -50,16 +50,16 @@
       "default": true,
       "position": {
         "x": [
-          16,
-          16
+          48,
+          48
         ],
         "y": [
           0,
           0
         ],
         "z": [
-          16,
-          16
+          48,
+          48
         ]
       },
       "cameraTarget": {
