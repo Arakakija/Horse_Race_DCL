@@ -91,7 +91,7 @@ export class MyRoom extends Room<MyRoomState> {
     if(this.maxClients >= this.state.players.size){
       this.state.players.set(client.sessionId, newPlayer);
     }
-    this.broadcast('player-joined', {user: options.userData.displayName, horses: this.state.horses})
+    this.broadcast('player-joined', {user: options.userData.displayName, horses: this.state.horses, cash : newPlayer.cash})
   }
 
   onLeave (client: Client, consented: boolean) {
@@ -221,8 +221,9 @@ export class MyRoom extends Room<MyRoomState> {
     if(this.state.gameStatus === GAME_STATUS.PLACING_BETS){
         const player = this.state.players.get(client.sessionId);
         client.id
-        player.cash-10
+        player.cash-=10
         player.horseID = message.horseID;
+        this.broadcast('bet-placed',  this.state.players.get(client.sessionId).cash)
     }
   }
 

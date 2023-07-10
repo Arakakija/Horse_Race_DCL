@@ -10,6 +10,7 @@ import { Vector3 } from '@dcl/sdk/math';
 import { addRepeatTrigger, getRandomNumber } from './Utils';
 import { AddHorse, MoveHorse, RestartHorses } from './horses';
 import { Horse } from './custom-components';
+import { betHorse, setFunction } from './ui';
 
 
 let nodesX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
@@ -17,7 +18,9 @@ let nodesY = [0, 1, 2, 3, 4, 5, 6]
 let shouldMove = false
 
 export let timeToWait : number;
+export let playerCash : number;
 export let gameStatus : string;
+export let canBet : boolean = true;
 
 export function initGamePlay(){
     // play ambient music
@@ -52,6 +55,14 @@ connect("my_room").then((room) => {
         }
         
     }
+
+    function PlaceBet(){
+        if(!canBet) return;
+        console.log("HORSE SELECTED " + betHorse)
+        room.send('select-horse',{horseID : betHorse});
+    };
+
+    setFunction(PlaceBet);
 
     let horses : Entity[] = [];
     let lastHorse : Entity;
@@ -124,7 +135,8 @@ connect("my_room").then((room) => {
     })
 
     room.onMessage('place-your-beats',() => {
-        room.send('select-horse',{horseID : "1"});
+        //room.send('select-horse',{horseID : "1"});
+        canBet = true;
     })
 
     room.onMessage("game-start", () => {
@@ -181,7 +193,6 @@ connect("my_room").then((room) => {
     })
 
     room.onMessage('time-to-next-round', (message) => {
-        console.log("TIME WAIT ", message);
         gameStatus = "Next Round: ";
         timeToWait = message;
 
@@ -191,8 +202,18 @@ connect("my_room").then((room) => {
     room.onMessage('bet-time-remaining', (message) => {
         gameStatus = "Place your bets!: ";
         timeToWait = message;
-
     })
+
+    room.onMessage('player-joined',(data) =>{
+        playerCash = data.cash;
+    })
+
+
+    room.onMessage('bet-placed',(data) =>{
+        playerCash = data;
+        canBet = false;
+    })
+    
     
     
 
@@ -205,4 +226,9 @@ connect("my_room").then((room) => {
     console.error(err)
 
 });
+}
+
+function newFunction() {
+    function SetBet() {
+    }
 }
