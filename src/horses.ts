@@ -16,7 +16,7 @@ export function createHorse(horseId : number,startPosition : Vector3) : Entity{
     Horse.create(horseEntity,{
         id : horseId,
         actualPosition: 0,
-        startPosition: Vector3.create(startPosition.x, 1, startPosition.z),
+        startPosition: Vector3.create(startPosition.x, 1.25, startPosition.z),
     })
     
     const sourceFilePath = 'assets/scene/seahorse-'+ (horseId + 1) +'.glb'
@@ -27,6 +27,7 @@ export function createHorse(horseId : number,startPosition : Vector3) : Entity{
     Transform.create(horseEntity,{
         position: Horse.get(horseEntity).startPosition,
         rotation: Quaternion.fromEulerDegrees(0,180,0),
+        scale: Vector3.create(0.65,0.65,0.65)
     })
 
     return horseEntity;

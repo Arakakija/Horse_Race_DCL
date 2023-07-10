@@ -38,7 +38,7 @@ import { Grid } from './custom-components';
         const angle = (segment * anglePerSegment * Math.PI) / 180; // Convert degrees to radians
         const newX = center.x + currentRadius * Math.cos(angle);
         const newZ = center.z + currentRadius * Math.sin(angle);
-        point.position = Vector3.create(newX, 1, newZ);
+        point.position = Vector3.create(newX, 1.25, newZ);
         point.rotation = Quaternion.fromEulerDegrees(0,-(angle * 180 / Math.PI) + 180 ,0);
         ringMap.points.push(point);
       }
