@@ -16,7 +16,10 @@
   "tags": [],
   "scene": {
     "parcels": [
-      "0,0"
+      "0,0",
+      "0,1",
+      "1,1",
+      "1,0"
     ],
     "base": "0,0"
   },
@@ -49,5 +52,10 @@
     "ALLOW_TO_TRIGGER_AVATAR_EMOTE",
     "ALLOW_TO_MOVE_PLAYER_INSIDE_SCENE"
   ],
-  "featureToggles": {}
+  "featureToggles": {},
+  "worldConfiguration": {
+    "name": "meyara.dcl.eth",
+    "skybox": 36000,
+    "fixedAdapter": "offline:offline"
+  }
 }
