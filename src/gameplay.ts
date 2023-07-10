@@ -10,13 +10,12 @@ import { Vector3 } from '@dcl/sdk/math';
 import { addRepeatTrigger, getRandomNumber } from './Utils';
 import { MoveHorse, RestartHorse, createHorse } from './horses';
 import { Grid, Horse } from './custom-components';
-import { betHorse, setFunction } from './ui';
 import { GenerateGridGraph, createCircularGrid } from './grid';
 import { Update, resetHorses } from './systems';
 
 
 export let timeToWait : number;
-export let playerCash : number;
+export let playerCash : number = 1000;
 export let gameStatus : string;
 export let canBet : boolean = true;
 
@@ -50,6 +49,15 @@ function GenerateHorses()
         horses.push(createHorse(i,Grid.get(grid).ring[i].points[0].position));
     }
 }
+
+export function placeBet(amount : number)
+{
+    if(!canBet) return
+    playerCash -= amount;
+    canBet = false;
+}
+
+
 
 
 /* TODO: FIX THIS Multiplayer

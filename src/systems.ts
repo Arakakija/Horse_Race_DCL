@@ -18,7 +18,7 @@ import { grid, horses, winPosition } from './gameplay';
   let startGame : boolean = true
   let ResetGame : boolean = false
   let interval = 5;
-  let cooldown = 5;
+  export let cooldown = 5;
   
   let minPosition : number = 1;
   let waitForReset = 5

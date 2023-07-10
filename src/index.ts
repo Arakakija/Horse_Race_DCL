@@ -14,5 +14,5 @@ export * from '@dcl/sdk'
 export function main(){
     //initStatic() 
     initGamePlay() 
-    //setupUi()
+    setupUi()
 }
