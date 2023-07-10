@@ -133,7 +133,7 @@ connect("my_room").then((room) => {
     })
 
     room.onMessage('place-your-beats',() => {
-        room.send('select-horse',{horseID : "1"});
+        //room.send('select-horse',{horseID : "1"});
     })
 
     room.onMessage("game-start", () => {
@@ -204,6 +204,12 @@ connect("my_room").then((room) => {
     room.onMessage('player-joined',(data) =>{
         playerCash = data.cash;
     })
+
+
+    room.onMessage('bet-placed',(data) =>{
+        playerCash = data;
+    })
+    
     
     
 

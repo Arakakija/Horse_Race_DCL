@@ -221,8 +221,9 @@ export class MyRoom extends Room<MyRoomState> {
     if(this.state.gameStatus === GAME_STATUS.PLACING_BETS){
         const player = this.state.players.get(client.sessionId);
         client.id
-        player.cash-10
+        player.cash-=10
         player.horseID = message.horseID;
+        this.broadcast('bet-placed',  this.state.players.get(client.sessionId).cash)
     }
   }
 

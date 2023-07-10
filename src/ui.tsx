@@ -74,9 +74,9 @@ const uiComponent = () => (
 		/>
 
 <Label
-uiTransform={{margin: {left : '10%'}}}
       value={"CASH: " + playerCash}
-      fontSize={20}
+      uiTransform={{ margin: 10}}
+      fontSize={10}
     />
 
     
