@@ -14,6 +14,9 @@ export const Grid = engine.defineComponent('Grid',
     ring : Schemas.Array(Schemas.Map(
         {
             id: Schemas.Int,
-            points: Schemas.Array(Schemas.Vector3),
+            points: Schemas.Array(Schemas.Map({
+                position : Schemas.Vector3,
+                rotation : Schemas.Quaternion,
+            }))
         })),
 })

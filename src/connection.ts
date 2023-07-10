@@ -12,7 +12,7 @@ import { getRealm } from "~system/Runtime"
 //import { getUserData } from "@decentraland/Identity";
 
 
-
+/*
 export async function connect(roomName: string, options: any = {}) {
 
     const realm = await getRealm({
@@ -51,7 +51,7 @@ export async function connect(roomName: string, options: any = {}) {
         throw e;
     }
 }
-
+*/
 //let message: UIText;
 
 function addConnectionDebugger(endpoint: string) {

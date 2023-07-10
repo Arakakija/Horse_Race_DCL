@@ -19,21 +19,31 @@ import { Grid } from './custom-components';
   
     for (let ring = 0; ring < rings; ring++) {
       const currentRadius = distanceBetweenRings * (ring + 1);
+
       const ringMap = Schemas.Map({
         id: Schemas.Int,
-        points: Schemas.Array(Schemas.Vector3),
+        points: Schemas.Array(Schemas.Map({
+          position : Schemas.Vector3,
+          rotation : Schemas.Quaternion,
+      }))
       }).create();
-      
+
+      ringMap.id = ring;
       for (let segment = 0; segment < segments; segment++) {
+        const point = Schemas.Map({
+          position : Schemas.Vector3,
+          rotation : Schemas.Quaternion,
+        }).create();
+
         const angle = (segment * anglePerSegment * Math.PI) / 180; // Convert degrees to radians
         const newX = center.x + currentRadius * Math.cos(angle);
         const newZ = center.z + currentRadius * Math.sin(angle);
-        const newVector = Vector3.create(newX, 1, newZ);
-        ringMap.points.push(newVector);
+        point.position = Vector3.create(newX, 1, newZ);
+        point.rotation = Quaternion.fromEulerDegrees(0,-(angle * 180 / Math.PI) + 180 ,0);
+        ringMap.points.push(point);
       }
       grid.ring.push(ringMap);
     }
-
     return gridEntity;
   }
 
@@ -48,13 +58,14 @@ import { Grid } from './custom-components';
           Transform.create(pointsPreview,
               {
                   position : {
-                      x : point.x,
+                      x : point.position.x,
                       y : 1,
-                      z : point.z, 
+                      z : point.position.z, 
                   }
               })
         })
       })
   }
+
 
 

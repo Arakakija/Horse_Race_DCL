@@ -1,17 +1,18 @@
 import * as utils from '@dcl-sdk/utils'
 //import * as ui from '@dcl/ui-scene-utils';
-import { connect } from "./connection";
+//import { connect } from "./connection";
 import { updateLeaderboard } from './leaderboard';
 import { floor } from './scene';
 import { ambienceSound, clickSound, fallSound, finishSound1, finishSound2, newLeaderSound, countdownRestartSound, playLoop, playOnce, playOnceRandom } from './sound';
 import { log } from './back-ports/backPorts';
-import { AudioSource, Entity, MeshCollider, MeshRenderer, Transform, engine } from '@dcl/sdk/ecs';
+import { AudioSource, Entity, MeshCollider, MeshRenderer, Schemas, Transform, engine } from '@dcl/sdk/ecs';
 import { Vector3 } from '@dcl/sdk/math';
 import { addRepeatTrigger, getRandomNumber } from './Utils';
-import { AddHorse, MoveHorse, RestartHorses } from './horses';
-import { Horse } from './custom-components';
+import { MoveHorse, RestartHorse, createHorse } from './horses';
+import { Grid, Horse } from './custom-components';
 import { betHorse, setFunction } from './ui';
 import { GenerateGridGraph, createCircularGrid } from './grid';
+import { Update, resetHorses } from './systems';
 
 
 export let timeToWait : number;
@@ -20,10 +21,18 @@ export let gameStatus : string;
 export let canBet : boolean = true;
 
 export let grid : Entity;
+export let horses = Schemas.Array(Schemas.Entity).create();
+export let winPosition : number = 11;
+
+
+engine.addSystem(Update)
+engine.addSystem(resetHorses)
+
 
 export function initGamePlay(){
     setUp();
     GenerateGridGraph(grid);
+    GenerateHorses();
 }
 
 function setUp()
@@ -33,6 +42,13 @@ function setUp()
     const rings = 4;
     const segments = 12
     grid = createCircularGrid(center,radius,rings,segments);
+}
+
+function GenerateHorses()
+{
+    for (let i = 0; i < 4; i++) {
+        horses.push(createHorse(i,Grid.get(grid).ring[i].points[0].position));
+    }
 }
 
 

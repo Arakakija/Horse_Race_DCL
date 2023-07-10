@@ -9,101 +9,66 @@ import {
     inputSystem,
     Entity
   } from '@dcl/sdk/ecs'
-  import { Horse } from './custom-components';
-  import { GetTile } from './grid-systems';
+import { Grid, Horse } from './custom-components';
  import { getRandomNumber } from './Utils';
+import { MoveHorse, RestartHorse, checkIfHorsesMustGoBack } from './horses';
+import { grid, horses, winPosition } from './gameplay';
   
   
+  let startGame : boolean = true
+  let ResetGame : boolean = false
   let interval = 3;
   let cooldown = 0;
   
-  let minPosition = 1;
+  let minPosition : number = 1;
+  let waitForReset = 5
 
 
-  export function MoveHorseForward(horseEntity : Entity, nodesX : number[], nodesY : number[])
+  export function Update(dt: number)
   {
-     const horseTransfrom = Transform.getMutable(horseEntity);
-     const horse = Horse.getMutable(horseEntity);
-     if(horse.actualPosition < nodesX.length - 1)
-     {
-        horseTransfrom.position.x = Transform.get(GetTile(horse.actualPosition+1,0)).position.x;
-        horse.actualPosition++;
-     }    
-  }
-
-  export function MoveHorseBackward(horseEntity : Entity)
-  {
-     const horseTransfrom = Transform.getMutable(horseEntity);
-     const horse = Horse.getMutable(horseEntity);
-     if(horse.actualPosition > 0)
-     {
-        horseTransfrom.position.x = Transform.get(GetTile(horse.actualPosition-1,0)).position.x;
-        horse.actualPosition--;
-     }    
-  }  
-  
-  export function Update(nodesX : number[], nodesY : number[],dt: number)
-  {
-
+        if(!startGame) return
         if(cooldown <= 0)
         {
-           MoveRandomHorseForward(GetHorse(getRandomNumber(0,3)),nodesX,nodesY);
-           cooldown = interval;
+           const horseId = getRandomNumber(0,3)
+           const horse = horses[horseId];
+           const horseComp = Horse.getMutable(horse);
+           const CheckIfWinPosition = horseComp.actualPosition < winPosition ? Horse.get(horse).actualPosition + 1 : 0;
+           const point = Grid.get(grid).ring[horseId].points[CheckIfWinPosition]
+           MoveHorse(horse,point.position,Grid.get(grid).ring[horseId].points[CheckIfWinPosition].rotation)
+           horseComp.actualPosition++;
+           if(horseComp.actualPosition > winPosition)
+           {
+               ResetGame =true;
+               startGame = false;
+
+           } 
+           if(checkIfHorsesMustGoBack(minPosition)) minPosition++;
+           cooldown = interval; 
         }
         cooldown -= dt;
   }
   
-  
-  export function MoveRandomHorseForward(horseEntity : Entity, nodesX : number[], nodesY : number[])
+
+  export function resetHorses(dt : number)
   {
-     MoveHorseForward(horseEntity,nodesX,nodesY);
-     CheckForPositions(nodesX,nodesY);
+      if(!ResetGame) return
+      if(waitForReset <= 0)
+      {
+         horses.forEach((horse)=> {
+            RestartHorse(horse);
+         })
+         waitForReset = 5;
+         ResetGame = false;
+      }
+      else
+      {
+         waitForReset-= dt;
+      }
   }
-  
-  export function MoveRandomHorseBackward(horseEntity : Entity, nodesX : number[], nodesY : number[])
-  {
-     MoveHorseBackward(horseEntity);
-  }
-  
+
   export function ResetHorse(horseEntity : Entity)
   {
      let horseTransfrom  = Transform.getMutable(horseEntity).position;
      horseTransfrom = Horse.get(horseEntity).startPosition;
   }
   
-  function GetHorse(id : number) : Entity
-  {
-     for(const [horseEntity] of engine.getEntitiesWith(Horse))
-     {
-        if(Horse.get(horseEntity).id === id)
-        {
-           return horseEntity;
-        }
-     }
-     const horseEntity = engine.addEntity()
-     console.log('No horses found');
-     return horseEntity;
-  }
-  
-  function CheckForPositions(nodesX : number[], nodesY : number[])
-  {
-     let i = 0;
-     for(const [horseEntity] of engine.getEntitiesWith(Horse))
-     {
-        if(Horse.get(horseEntity).actualPosition >= minPosition)
-        {
-           i++;
-  
-        }
-     }
-  
-     if(i >= 4)
-     {
-        console.log('Entro');
-        MoveRandomHorseBackward(GetHorse(getRandomNumber(0,3)),nodesX,nodesY);
-        i = 0;
-        minPosition++;
-     }
-  }
-
- 
