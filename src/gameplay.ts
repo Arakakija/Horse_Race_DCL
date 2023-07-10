@@ -11,27 +11,36 @@ import { addRepeatTrigger, getRandomNumber } from './Utils';
 import { AddHorse, MoveHorse, RestartHorses } from './horses';
 import { Horse } from './custom-components';
 import { betHorse, setFunction } from './ui';
+import { GenerateGridGraph, createCircularGrid } from './grid';
 
-
-let nodesX = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15]
-let nodesY = [0, 1, 2, 3, 4, 5, 6]
-let shouldMove = false
 
 export let timeToWait : number;
 export let playerCash : number;
 export let gameStatus : string;
 export let canBet : boolean = true;
 
+export let grid : Entity;
+
 export function initGamePlay(){
-    // play ambient music
-    playLoop(ambienceSound, 0.4);
+    setUp();
+    GenerateGridGraph(grid);
+}
 
-    updateLeaderboard(["- Nobody -"]);
+function setUp()
+{
+    const center = Vector3.create(41,1,48);
+    const radius = 5.6;
+    const rings = 4;
+    const segments = 12
+    grid = createCircularGrid(center,radius,rings,segments);
+}
 
-//
-// Connect to Colyseus server! 
-// Set up the scene after connection has been established.
-//
+
+/* TODO: FIX THIS Multiplayer
+// play ambient music
+playLoop(ambienceSound, 0.4);
+
+updateLeaderboard(["- Nobody -"]);
 connect("my_room").then((room) => {
     log("Connected!");
     
@@ -227,8 +236,4 @@ connect("my_room").then((room) => {
 
 });
 }
-
-function newFunction() {
-    function SetBet() {
-    }
-}
+*/

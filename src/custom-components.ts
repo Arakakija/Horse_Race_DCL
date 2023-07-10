@@ -8,18 +8,12 @@ export const Horse = engine.defineComponent('Horse',{
     actualPosition: Schemas.Int
 })
 
-export const Grid = engine.defineComponent('Grid',{
-    sizeX : Schemas.Int,
-    sizeY: Schemas.Int,
-    grid: Schemas.Map({
-        positionX: Schemas.Array(Schemas.Int),
-        positionY: Schemas.Array(Schemas.Int)
-    })
-})
 
-export const Tile = engine.defineComponent('Tile',{
-    id: Schemas.Map({
-        idX: Schemas.Int,
-        idY: Schemas.Int
-    }),
-});
+export const Grid = engine.defineComponent('Grid',
+{
+    ring : Schemas.Array(Schemas.Map(
+        {
+            id: Schemas.Int,
+            points: Schemas.Array(Schemas.Vector3),
+        })),
+})
