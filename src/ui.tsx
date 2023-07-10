@@ -1,7 +1,7 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Dropdown, Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
 import { gameStatus, playerCash, timeToWait } from './gameplay'
-import { Color4Type } from '@dcl/sdk/ecs'
+import { Color4Type, Font } from '@dcl/sdk/ecs'
 
 export let betHorse : string = '1';
 let placeBet : any;
@@ -30,38 +30,32 @@ function selectOption(index: number) {
   
 const uiComponent = () => (
   <UiEntity
-    uiTransform = {{
-      width:'100%',
-      height: '100%',
-      flexDirection:"row",
-      alignItems:"center",
-      margin: { top: '0%', left: '0%'}
-    }}
     uiBackground={{ color: Color4.Clear() }}
   >
     <UiEntity
         uiTransform={{
             width: 400,
             height: 100,
-            margin: { top: '10px'}
+            margin: { top: '100px', left : '300px'}
         }}
         uiBackground={{ color: Color4.create(0, 0, 0, 0.6) }}
         uiText={{ value: gameStatus + timeToWait , fontSize: 30 }}
     />
-    <Label value="Select a color"
-        fontSize={18}
-        color={Color4.Green()}
+    <UiEntity uiText={{value : "Select a Horse", fontSize : 18, color : Color4.Green()}}
         uiTransform={{
           width: "140px",
           height: "40px",
+          margin: { bottom: '600px', right : '50px'}
         }}
       />
       <Dropdown
-        options= {[`Horse 1`, `Horse 2`, `Horse 3`,'Horse 4']}
+        options= {[`Yellow`, `Purple`, `Green`,' Pink']}
+        fontSize={8}
         onChange={selectOption}
         uiTransform={{
-          width: "100px",
+          width: "200px",
           height: "40px",
+          margin: { bottom: '600px'}
         }}
         uiBackground={{color: Color4.Gray()}}
       />
@@ -69,17 +63,18 @@ const uiComponent = () => (
 
     <Button
 			value="BET"
-			uiTransform={{ width: 80, height: 20, margin: 4 }}
+			uiTransform={{ width: 80, height: 20,  margin: { bottom: '600px', left : '30px' }}}
 			onMouseDown={placeBet}
+      
 		/>
+    <UiEntity uiText={{value : "CASH: " + playerCash, fontSize : 10, color : Color4.Green()}}
+        uiTransform={{
+          width: "140px",
+          height: "40px",
+          margin: { bottom: '400px', right : '50px'}
+        }}
+      />
 
-<Label
-      value={"CASH: " + playerCash}
-      uiTransform={{ margin: 10}}
-      fontSize={10}
-    />
-
-    
   </UiEntity>
 )
 
