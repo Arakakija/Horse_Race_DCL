@@ -134,7 +134,7 @@ export function placeBet(horseId : number,amount : number)
     if(!canBet || amount > playerCash) return
     playerCash -= amount;
     playerBet = amount;
-    horseId = playerHorseId;
+    playerHorseId = horseId;
     canBet = false;
     StartGame();
 }
