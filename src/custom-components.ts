@@ -29,3 +29,10 @@ export const Grid = engine.defineComponent('Grid',
 })
 
 export const Roulette = engine.defineComponent('Roulette',RouletteData)
+
+export const AudioSource = engine.defineComponent('AudioSource',
+{
+    audioClipUrl: Schemas.String,
+    loop: Schemas.Boolean,
+    playing: Schemas.Boolean
+})
