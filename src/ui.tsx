@@ -9,6 +9,7 @@ let amount : number = 0;
 
 function selectOption(index: number) {
     betHorse = index
+    console.log(betHorse);
   }
   
   const uiComponent = () => (
