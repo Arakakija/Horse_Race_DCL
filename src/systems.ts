@@ -33,12 +33,12 @@ import { getWorldRotation } from '@dcl-sdk/utils';
         if(!startGame) return
         if(cooldown <= 0)
         {
-           cooldown = ActivateRoulette() + 1.0 
+           cooldown = ActivateRoulette() + 4.0 
         }
         cooldown -= dt;
   }
 
-function MoveHorseByRoullete(horseId: number) {
+export function MoveHorseByRoullete(horseId: number) {
    const horse = horses[horseId];
    const horseComp = Horse.getMutable(horse);
    const CheckIfWinPosition = horseComp.actualPosition < winPosition ? Horse.get(horse).actualPosition + 1 : 0;
@@ -60,38 +60,6 @@ function MoveHorseByRoullete(horseId: number) {
       duration = amount;
    }
 
-   function selectHorse(angle : number)
-   {
-      if(0<= angle && angle < 90)
-      {
-         //console.log("Horse Purple ")
-         MoveHorseByRoullete(1);
-         return
-      }
-
-      if(90<= angle && angle < 180)
-      {
-         //console.log("Horse: Pink")
-         MoveHorseByRoullete(2);
-         return
-      }
-
-      if(180<= angle && angle < 270)
-      {
-         //console.log("Horse: Green")
-         MoveHorseByRoullete(3);
-         return
-      }
-
-      if(-90<= angle && angle < 0)
-      {
-         //console.log("Horse: Yellow")
-         MoveHorseByRoullete(0);
-         return
-      }
-   }
-  
-  
 
   export function resetHorses(dt : number)
   {
@@ -130,11 +98,8 @@ function MoveHorseByRoullete(horseId: number) {
          duration-= dt;
          if(duration <0) {
             duration = 0;
-            const angle = getWorldRotation(roulette);
-            //console.log("WORLD ROTATION: " + angle.x)
             GetAngle(transform.rotation);
             DeactivateRoulette()
-            selectHorse(angle.x)
          }
       }
    }

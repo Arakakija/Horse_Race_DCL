@@ -11,7 +11,7 @@ import { addRepeatTrigger, getRandomNumber } from './Utils';
 import { MoveHorse, RestartHorse, createHorse } from './horses';
 import { Grid, Horse, Roulette } from './custom-components';
 import { GenerateGridGraph, createCircularGrid } from './grid';
-import { SetDuration, SpinRoullete, Update, resetHorses } from './systems';
+import { MoveHorseByRoullete, SetDuration, SpinRoullete, Update, resetHorses } from './systems';
 
 
 export let timeToWait : number;
@@ -81,7 +81,7 @@ export let initRototion : Quaternion;
 export let initWorldPosition : Vector3;
 export function ActivateRoulette()
 {
-    const randomDuration = getRandomNumber(1,3);
+    const randomDuration = getRandomNumber(1,15);
     SetDuration(randomDuration);
     shouldRotate = true;
     return randomDuration;
@@ -101,26 +101,23 @@ export function GetAngle(quat : Quaternion)
 
         if(0 <= angle && angle <= 90 && normalizedVectorX > 0)
         {
-          console.log("Yellow");
+           MoveHorseByRoullete(0)
         }
 
         if(0 <= angle && angle <= 90 && normalizedVectorX < 0)
         {
-          console.log("Purple");
-        }
-
-        if(angle > 90 && normalizedVectorX > 0)
-        {
-          console.log("Green");
+            MoveHorseByRoullete(1)
         }
 
         if(angle > 90 && normalizedVectorX < 0)
         {
-          console.log("Pink");
+            MoveHorseByRoullete(2)
         }
-        
-        
-        
+
+        if(angle > 90 && normalizedVectorX > 0)
+        {
+            MoveHorseByRoullete(3)
+        }
     }
 }
 
