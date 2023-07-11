@@ -11,7 +11,7 @@ import { addRepeatTrigger, getRandomNumber } from './Utils';
 import { MoveHorse, RestartHorse, createHorse } from './horses';
 import { Grid, Horse, Roulette } from './custom-components';
 import { GenerateGridGraph, createCircularGrid } from './grid';
-import { MoveHorseByRoullete, SetDuration, SpinRoullete, Update, resetHorses } from './systems';
+import { MoveHorseByRoullete, SetDuration, SpinRoullete, StartGame, Update, resetHorses } from './systems';
 
 
 export let timeToWait : number;
@@ -23,6 +23,9 @@ export let grid : Entity;
 export let horses = Schemas.Array(Schemas.Entity).create();
 export let winPosition : number = 11;
 export let shouldRotate : boolean = false;
+
+export let playerBet : number = 0;
+export let playerHorseId : number = 0;
 
 
 
@@ -73,7 +76,6 @@ function SetUpRoulette()
         }
         initRototion = rouletteComp.start;
     }
-    ActivateRoulette()
 }
 
 
@@ -126,11 +128,20 @@ export function DeactivateRoulette()
     shouldRotate = false;
 }
     
-export function placeBet(amount : number)
+export function placeBet(horseId : number,amount : number)
 {
-    if(!canBet) return
+    if(!canBet || amount > playerCash) return
     playerCash -= amount;
+    playerBet = amount;
+    horseId = playerHorseId;
     canBet = false;
+    StartGame();
+}
+
+
+export function Win()
+{
+    playerCash += playerBet * 2;
 }
 
 

@@ -12,15 +12,15 @@ import {
 import { Grid, Horse, Roulette } from './custom-components';
  import { getRandomNumber } from './Utils';
 import { MoveHorse, RestartHorse, checkIfHorsesMustGoBack } from './horses';
-import { ActivateRoulette, DeactivateRoulette, GetAngle, grid, horses, shouldRotate, winPosition } from './gameplay';
+import { ActivateRoulette, DeactivateRoulette, GetAngle, Win, grid, horses, playerBet, playerCash, playerHorseId, shouldRotate, winPosition } from './gameplay';
 import { Quaternion, Vector3 } from '@dcl/sdk/math';
 import { getWorldRotation } from '@dcl-sdk/utils';
   
   
-  let startGame : boolean = true
+   export let startGame : boolean =false;
   let ResetGame : boolean = false
   let interval = 5;
-  export let cooldown = 5;
+  export let cooldown = 0;
   export let duration = 0;
   
   
@@ -50,6 +50,7 @@ export function MoveHorseByRoullete(horseId: number) {
    {
        ResetGame =true;
        startGame = false;
+       if(horseComp.id === playerHorseId) Win();
 
    } 
    if(checkIfHorsesMustGoBack(minPosition)) minPosition++;
@@ -83,6 +84,13 @@ export function MoveHorseByRoullete(horseId: number) {
      let horseTransfrom  = Transform.getMutable(horseEntity).position;
      horseTransfrom = Horse.get(horseEntity).startPosition;
   }
+
+  export function StartGame()
+  {
+    startGame = true
+  }
+
+
 
   export function SpinRoullete(dt : number)
   {

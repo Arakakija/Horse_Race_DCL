@@ -1,7 +1,7 @@
 import { Color4 } from '@dcl/sdk/math'
 import ReactEcs, { Button, Dropdown, Input, Label, ReactEcsRenderer, UiEntity } from '@dcl/sdk/react-ecs'
 import { Color4Type, Font } from '@dcl/sdk/ecs'
-import { cooldown } from './systems';
+import { StartGame, cooldown, startGame } from './systems';
 import { placeBet, playerCash } from './gameplay';
 
 export let betHorse : number = 0;
@@ -118,19 +118,12 @@ function selectOption(index: number) {
         ></Label>
       <Button
           uiTransform={{ width: "100%", height: 100, margin: 6 }}
-          value='Place Bet'
+          disabled = {startGame}
+          value='Start Race'
           variant='primary'
           fontSize={16}
           onMouseDown={() => {
-            placeBet(amount)
-          }}
-        />
-        <Button
-          uiTransform={{ width: "100%", height: 100, margin: 6 }}
-          value='Start Game'
-          variant='primary'
-          fontSize={16}
-          onMouseDown={() => {
+            placeBet(betHorse,amount)
           }}
         />
        </UiEntity>
