@@ -37,7 +37,7 @@ engine.addSystem(SpinRoullete)
 export function initGamePlay(){
     setUp();
     StartBkgMusic();
-    GenerateGridGraph(grid);
+    //GenerateGridGraph(grid);
     GenerateHorses();
 }
 
@@ -154,11 +154,26 @@ function StartBkgMusic()
    playSound(sourceEntity)
 }
 
+export function StartWonMusic()
+{
+    const sourceEntity = engine.addEntity()
+
+    // Create AudioSource component
+    const souce = AudioSource.create(sourceEntity, {
+        audioClipUrl: 'sounds/wow.mp3',
+        loop: false,
+        playing: true
+    })
+
+
+   playSound(sourceEntity)
+}
+
 function playSound(entity: Entity){
 
     // fetch mutable version of audio source component
     const audioSource = AudioSource.getMutable(entity)
-    audioSource.volume = 1.0;
+    audioSource.volume = 1;
     // modify its playing value
     audioSource.playing = true
 }
@@ -167,6 +182,8 @@ function playSound(entity: Entity){
 export function Win()
 {
     playerCash += playerBet * 2;
+    playerBet = 0;
+    StartWonMusic()
 }
 
 
