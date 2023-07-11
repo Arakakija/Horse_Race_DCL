@@ -36,6 +36,7 @@ engine.addSystem(SpinRoullete)
 
 export function initGamePlay(){
     setUp();
+    StartBkgMusic();
     GenerateGridGraph(grid);
     GenerateHorses();
 }
@@ -136,6 +137,30 @@ export function placeBet(horseId : number,amount : number)
     horseId = playerHorseId;
     canBet = false;
     StartGame();
+}
+
+function StartBkgMusic()
+{
+    const sourceEntity = engine.addEntity()
+
+    // Create AudioSource component
+    const souce = AudioSource.create(sourceEntity, {
+        audioClipUrl: 'sounds/bkg.mp3',
+        loop: true,
+        playing: true
+    })
+
+
+   playSound(sourceEntity)
+}
+
+function playSound(entity: Entity){
+
+    // fetch mutable version of audio source component
+    const audioSource = AudioSource.getMutable(entity)
+    audioSource.volume = 1.0;
+    // modify its playing value
+    audioSource.playing = true
 }
 
 
