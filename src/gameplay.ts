@@ -5,13 +5,13 @@ import { updateLeaderboard } from './leaderboard';
 import { floor } from './scene';
 import { ambienceSound, clickSound, fallSound, finishSound1, finishSound2, newLeaderSound, countdownRestartSound, playLoop, playOnce, playOnceRandom } from './sound';
 import { log } from './back-ports/backPorts';
-import { AudioSource, Entity, MeshCollider, MeshRenderer, Schemas, Transform, engine } from '@dcl/sdk/ecs';
-import { Vector3 } from '@dcl/sdk/math';
+import { AudioSource, DeleteComponent, Entity, MeshCollider, MeshRenderer, Schemas, Transform, engine } from '@dcl/sdk/ecs';
+import { Quaternion, Vector3 } from '@dcl/sdk/math';
 import { addRepeatTrigger, getRandomNumber } from './Utils';
 import { MoveHorse, RestartHorse, createHorse } from './horses';
-import { Grid, Horse } from './custom-components';
+import { Grid, Horse, Roulette } from './custom-components';
 import { GenerateGridGraph, createCircularGrid } from './grid';
-import { Update, resetHorses } from './systems';
+import { SetDuration, SpinRoullete, Update, resetHorses } from './systems';
 
 
 export let timeToWait : number;
@@ -22,10 +22,13 @@ export let canBet : boolean = true;
 export let grid : Entity;
 export let horses = Schemas.Array(Schemas.Entity).create();
 export let winPosition : number = 11;
+export let shouldRotate : boolean = false;
+
 
 
 engine.addSystem(Update)
 engine.addSystem(resetHorses)
+engine.addSystem(SpinRoullete)
 
 
 export function initGamePlay(){
@@ -36,11 +39,13 @@ export function initGamePlay(){
 
 function setUp()
 {
-    const center = Vector3.create(41,1,48);
-    const radius = 5.6;
+    const center = Vector3.create(80.05,1,87.68);
+    const radius = 10;
     const rings = 4;
     const segments = 12
     grid = createCircularGrid(center,radius,rings,segments);
+
+    SetUpRoulette()
 }
 
 function GenerateHorses()
@@ -50,6 +55,80 @@ function GenerateHorses()
     }
 }
 
+function SetUpRoulette()
+{
+    const roulette = engine.getEntityOrNullByName("Roulette.glb");
+    if(roulette)
+    {
+        const rouletteComp = Roulette.create(roulette, {
+            start: Transform.get(roulette).rotation,
+            fraction: 0,
+            speed: 1,
+            selectedHorse  : 0
+        })
+        const arrow = engine.getEntityOrNullByName("Indicator Arrow");
+        if(arrow)
+        {
+            initWorldPosition = utils.getWorldPosition(arrow);
+        }
+        initRototion = rouletteComp.start;
+    }
+    ActivateRoulette()
+}
+
+
+export let initRototion : Quaternion;
+export let initWorldPosition : Vector3;
+export function ActivateRoulette()
+{
+    const randomDuration = getRandomNumber(1,3);
+    SetDuration(randomDuration);
+    shouldRotate = true;
+    return randomDuration;
+}
+
+export function GetAngle(quat : Quaternion)
+{
+    const angle = Quaternion.angle(initRototion,quat);
+    //console.log("Quat " + angle)
+
+    const arrow = engine.getEntityOrNullByName("Indicator Arrow");
+    if(arrow)
+    {
+        const direction  = Vector3.subtract(utils.getWorldPosition(arrow),initWorldPosition)
+        //console.log("direction " + Vector3.normalize(direction).x);
+        const normalizedVectorX = Vector3.normalize(direction).x;
+
+        if(0 <= angle && angle <= 90 && normalizedVectorX > 0)
+        {
+          console.log("Yellow");
+        }
+
+        if(0 <= angle && angle <= 90 && normalizedVectorX < 0)
+        {
+          console.log("Purple");
+        }
+
+        if(angle > 90 && normalizedVectorX > 0)
+        {
+          console.log("Green");
+        }
+
+        if(angle > 90 && normalizedVectorX < 0)
+        {
+          console.log("Pink");
+        }
+        
+        
+        
+    }
+}
+
+export function DeactivateRoulette()
+{
+    shouldRotate = false;
+}
+    
 export function placeBet(amount : number)
 {
     if(!canBet) return

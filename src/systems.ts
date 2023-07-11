@@ -9,16 +9,20 @@ import {
     inputSystem,
     Entity
   } from '@dcl/sdk/ecs'
-import { Grid, Horse } from './custom-components';
+import { Grid, Horse, Roulette } from './custom-components';
  import { getRandomNumber } from './Utils';
 import { MoveHorse, RestartHorse, checkIfHorsesMustGoBack } from './horses';
-import { grid, horses, winPosition } from './gameplay';
+import { ActivateRoulette, DeactivateRoulette, GetAngle, grid, horses, shouldRotate, winPosition } from './gameplay';
+import { Quaternion, Vector3 } from '@dcl/sdk/math';
+import { getWorldRotation } from '@dcl-sdk/utils';
   
   
   let startGame : boolean = true
   let ResetGame : boolean = false
   let interval = 5;
   export let cooldown = 5;
+  export let duration = 0;
+  
   
   let minPosition : number = 1;
   let waitForReset = 5
@@ -29,24 +33,64 @@ import { grid, horses, winPosition } from './gameplay';
         if(!startGame) return
         if(cooldown <= 0)
         {
-           const horseId = getRandomNumber(0,3)
-           const horse = horses[horseId];
-           const horseComp = Horse.getMutable(horse);
-           const CheckIfWinPosition = horseComp.actualPosition < winPosition ? Horse.get(horse).actualPosition + 1 : 0;
-           const point = Grid.get(grid).ring[horseId].points[CheckIfWinPosition]
-           MoveHorse(horse,point.position,Grid.get(grid).ring[horseId].points[CheckIfWinPosition].rotation)
-           horseComp.actualPosition++;
-           if(horseComp.actualPosition > winPosition)
-           {
-               ResetGame =true;
-               startGame = false;
-
-           } 
-           if(checkIfHorsesMustGoBack(minPosition)) minPosition++;
-           cooldown = interval; 
+           cooldown = ActivateRoulette() + 1.0 
         }
         cooldown -= dt;
   }
+
+function MoveHorseByRoullete(horseId: number) {
+   const horse = horses[horseId];
+   const horseComp = Horse.getMutable(horse);
+   const CheckIfWinPosition = horseComp.actualPosition < winPosition ? Horse.get(horse).actualPosition + 1 : 0;
+   const point = Grid.get(grid).ring[horseId].points[CheckIfWinPosition];
+   MoveHorse(horse, point.position, Grid.get(grid).ring[horseId].points[CheckIfWinPosition].rotation);
+   horseComp.actualPosition++;
+
+   if(horseComp.actualPosition > winPosition)
+   {
+       ResetGame =true;
+       startGame = false;
+
+   } 
+   if(checkIfHorsesMustGoBack(minPosition)) minPosition++;
+}
+
+   export function SetDuration(amount : number)
+   {
+      duration = amount;
+   }
+
+   function selectHorse(angle : number)
+   {
+      if(0<= angle && angle < 90)
+      {
+         //console.log("Horse Purple ")
+         MoveHorseByRoullete(1);
+         return
+      }
+
+      if(90<= angle && angle < 180)
+      {
+         //console.log("Horse: Pink")
+         MoveHorseByRoullete(2);
+         return
+      }
+
+      if(180<= angle && angle < 270)
+      {
+         //console.log("Horse: Green")
+         MoveHorseByRoullete(3);
+         return
+      }
+
+      if(-90<= angle && angle < 0)
+      {
+         //console.log("Horse: Yellow")
+         MoveHorseByRoullete(0);
+         return
+      }
+   }
+  
   
 
   export function resetHorses(dt : number)
@@ -71,4 +115,29 @@ import { grid, horses, winPosition } from './gameplay';
      let horseTransfrom  = Transform.getMutable(horseEntity).position;
      horseTransfrom = Horse.get(horseEntity).startPosition;
   }
+
+  export function SpinRoullete(dt : number)
+  {
+   if(!shouldRotate) return;
+   const roulette = engine.getEntityOrNullByName("Roulette.glb");
+   if(roulette)
+   {
+      
+      if(duration > 0)
+      {
+         const transform = Transform.getMutable(roulette);
+         transform.rotation = Quaternion.multiply(transform.rotation, Quaternion.fromAngleAxis(duration * dt * 40 , Vector3.Left()))
+         duration-= dt;
+         if(duration <0) {
+            duration = 0;
+            const angle = getWorldRotation(roulette);
+            //console.log("WORLD ROTATION: " + angle.x)
+            GetAngle(transform.rotation);
+            DeactivateRoulette()
+            selectHorse(angle.x)
+         }
+      }
+   }
+}
   
+ 

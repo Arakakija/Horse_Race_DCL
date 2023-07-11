@@ -1,6 +1,13 @@
 import { ComponentData, ComponentType, EntityMappingMode, Schemas, engine } from '@dcl/sdk/ecs'
 import { Color4 } from '@dcl/sdk/math';
 
+const RouletteData = {
+    start: Schemas.Quaternion,
+    end: Schemas.Quaternion,
+    fraction: Schemas.Float,
+    speed: Schemas.Float,
+    selectedHorse : Schemas.Float
+  }
 
 export const Horse = engine.defineComponent('Horse',{
     id: Schemas.Int,
@@ -20,3 +27,5 @@ export const Grid = engine.defineComponent('Grid',
             }))
         })),
 })
+
+export const Roulette = engine.defineComponent('Roulette',RouletteData)
